@@ -1,0 +1,273 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: ============================================================================
+:: SME Tally - Automated Offline Installation Script
+:: ============================================================================
+:: This script automates the installation of the SME Tally accounting application
+:: on Windows systems without internet connectivity.
+:: ============================================================================
+
+color 0A
+title SME Tally - Offline Installation
+
+echo.
+echo ============================================================================
+echo                    SME TALLY - OFFLINE INSTALLER
+echo ============================================================================
+echo.
+echo Starting automated installation...
+echo.
+
+:: Check for Administrator privileges
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [WARNING] This script should be run as Administrator for best results.
+    echo Some features may require elevated privileges.
+    echo.
+    timeout /t 3 >nul
+)
+
+:: ============================================================================
+:: STEP 1: Check for Node.js
+:: ============================================================================
+echo [STEP 1/6] Checking for Node.js installation...
+node --version >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [ERROR] Node.js is NOT installed!
+    echo.
+    echo Please install Node.js from the offline installer:
+    echo   - Run: node-installer\node-v20.x.x-x64.msi
+    echo   - After installation, restart this script
+    echo.
+    pause
+    exit /b 1
+) else (
+    for /f "tokens=*" %%i in ('node --version') do set NODE_VERSION=%%i
+    echo [OK] Node.js is installed: !NODE_VERSION!
+)
+
+:: Check npm
+npm --version >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [ERROR] npm is NOT installed!
+    echo Please reinstall Node.js with npm included.
+    pause
+    exit /b 1
+) else (
+    for /f "tokens=*" %%i in ('npm --version') do set NPM_VERSION=%%i
+    echo [OK] npm is installed: !NPM_VERSION!
+)
+
+echo.
+
+:: ============================================================================
+:: STEP 2: Check PostgreSQL (Optional for full features)
+:: ============================================================================
+echo [STEP 2/6] Checking for PostgreSQL installation...
+psql --version >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [WARNING] PostgreSQL is NOT installed.
+    echo The application will run with in-memory database (data not persisted).
+    echo.
+    echo For production use, install PostgreSQL:
+    echo   - Run: postgres-installer\postgresql-16.x-x64.exe
+    echo.
+    set USE_POSTGRES=false
+) else (
+    for /f "tokens=*" %%i in ('psql --version') do set PG_VERSION=%%i
+    echo [OK] PostgreSQL is installed: !PG_VERSION!
+    set USE_POSTGRES=true
+)
+
+echo.
+
+:: ============================================================================
+:: STEP 3: Install Dependencies
+:: ============================================================================
+echo [STEP 3/6] Installing application dependencies...
+echo This may take a few minutes...
+echo.
+
+if exist "node_modules" (
+    echo [INFO] node_modules folder already exists. Skipping installation.
+    echo If you want to reinstall, delete the node_modules folder and run this script again.
+) else (
+    if exist "offline-cache\node_modules.zip" (
+        echo [INFO] Extracting pre-packaged dependencies from offline cache...
+        powershell -command "Expand-Archive -Path 'offline-cache\node_modules.zip' -DestinationPath '.' -Force"
+        if %errorLevel% neq 0 (
+            echo [ERROR] Failed to extract dependencies!
+            echo Trying npm install instead...
+            call npm install --offline --prefer-offline --no-audit
+        ) else (
+            echo [OK] Dependencies extracted successfully!
+        )
+    ) else (
+        echo [INFO] Installing from package-lock.json...
+        call npm ci --offline --prefer-offline --no-audit
+        if %errorLevel% neq 0 (
+            echo [WARNING] npm ci failed. Trying npm install...
+            call npm install --offline --prefer-offline --no-audit
+        )
+    )
+)
+
+if %errorLevel% neq 0 (
+    echo [ERROR] Failed to install dependencies!
+    echo.
+    echo Troubleshooting:
+    echo 1. Ensure you have the complete offline package
+    echo 2. Check that node_modules.zip exists in offline-cache folder
+    echo 3. Try running: npm install --verbose
+    echo.
+    pause
+    exit /b 1
+)
+
+echo [OK] Dependencies installed successfully!
+echo.
+
+:: ============================================================================
+:: STEP 4: Configure Environment Variables
+:: ============================================================================
+echo [STEP 4/6] Configuring environment variables...
+
+if not exist ".env" (
+    echo [INFO] Creating .env file...
+    (
+        echo # SME Tally Environment Configuration
+        echo # Generated by offline installer
+        echo.
+        echo NODE_ENV=production
+        echo PORT=5000
+        echo.
+        echo # Session Secret - CHANGE THIS IN PRODUCTION!
+        echo SESSION_SECRET=%RANDOM%%RANDOM%%RANDOM%%RANDOM%
+        echo.
+        echo # Database Configuration
+        if "!USE_POSTGRES!"=="true" (
+            echo DATABASE_URL=postgresql://smetally:smetally@localhost:5432/smetally
+        ) else (
+            echo # DATABASE_URL=postgresql://user:pass@localhost:5432/smetally
+            echo # Using in-memory database - no DATABASE_URL needed
+        )
+        echo.
+        echo # Application Settings
+        echo APP_NAME=SME Tally
+        echo APP_VERSION=1.0.0
+    ) > .env
+    echo [OK] .env file created successfully!
+) else (
+    echo [INFO] .env file already exists. Skipping creation.
+)
+
+echo.
+
+:: ============================================================================
+:: STEP 5: Build Application
+:: ============================================================================
+echo [STEP 5/6] Building application for production...
+echo This may take a few minutes...
+echo.
+
+call npm run build
+if %errorLevel% neq 0 (
+    echo [ERROR] Build failed!
+    echo Please check the error messages above.
+    pause
+    exit /b 1
+)
+
+echo [OK] Application built successfully!
+echo.
+
+:: ============================================================================
+:: STEP 6: Database Setup (if PostgreSQL is available)
+:: ============================================================================
+echo [STEP 6/6] Setting up database...
+
+if "!USE_POSTGRES!"=="true" (
+    echo [INFO] PostgreSQL detected. Setting up database...
+    echo.
+    echo Creating database 'smetally'...
+    
+    psql -U postgres -c "CREATE DATABASE smetally;" 2>nul
+    psql -U postgres -c "CREATE USER smetally WITH PASSWORD 'smetally';" 2>nul
+    psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE smetally TO smetally;" 2>nul
+    
+    echo [INFO] Running database migrations...
+    call npm run db:push
+    
+    if %errorLevel% neq 0 (
+        echo [WARNING] Database setup encountered issues.
+        echo The application will run with in-memory database.
+        echo.
+        echo To set up database manually:
+        echo 1. Create PostgreSQL database: smetally
+        echo 2. Update DATABASE_URL in .env file
+        echo 3. Run: npm run db:push
+        echo.
+    ) else (
+        echo [OK] Database setup completed successfully!
+    )
+) else (
+    echo [INFO] No PostgreSQL detected. Using in-memory database.
+    echo Data will not persist between restarts.
+)
+
+echo.
+
+:: ============================================================================
+:: Installation Complete
+:: ============================================================================
+echo ============================================================================
+echo                    INSTALLATION COMPLETED SUCCESSFULLY!
+echo ============================================================================
+echo.
+echo Next Steps:
+echo   1. To start the application, run: start.cmd
+echo   2. Open your browser and go to: http://localhost:5000
+echo   3. Default login (if authentication is enabled):
+echo      - Username: admin
+echo      - Password: admin
+echo.
+echo Important Notes:
+if "!USE_POSTGRES!"=="false" (
+    echo   - Using IN-MEMORY database: Data will NOT be saved between restarts
+    echo   - For production use, install PostgreSQL and update .env file
+)
+echo   - Change SESSION_SECRET in .env file for security
+echo   - Application port: 5000 (change in .env if needed)
+echo.
+echo Documentation:
+echo   - User Guide: docs/USER_GUIDE.md
+echo   - API Documentation: docs/API_DOCUMENTATION.md
+echo   - Keyboard Shortcuts: Press Ctrl+K in the application
+echo.
+echo Support:
+echo   - GitHub: https://github.com/mohitsinghchandeljsr-byte/smetally
+echo   - Issues: https://github.com/mohitsinghchandeljsr-byte/smetally/issues
+echo.
+echo ============================================================================
+echo.
+
+:: Create desktop shortcut (optional)
+set /p CREATE_SHORTCUT="Would you like to create a desktop shortcut? (Y/N): "
+if /i "!CREATE_SHORTCUT!"=="Y" (
+    echo [INFO] Creating desktop shortcut...
+    set SCRIPT_DIR=%~dp0
+    set SHORTCUT_PATH=%USERPROFILE%\Desktop\SME Tally.lnk
+    
+    powershell -command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('!SHORTCUT_PATH!'); $s.TargetPath = '!SCRIPT_DIR!start.cmd'; $s.WorkingDirectory = '!SCRIPT_DIR!'; $s.IconLocation = '!SCRIPT_DIR!icon.ico'; $s.Description = 'SME Tally Accounting Application'; $s.Save()"
+    
+    if %errorLevel% equ 0 (
+        echo [OK] Desktop shortcut created successfully!
+    ) else (
+        echo [WARNING] Failed to create desktop shortcut.
+    )
+)
+
+echo.
+echo Press any key to exit...
+pause >nul

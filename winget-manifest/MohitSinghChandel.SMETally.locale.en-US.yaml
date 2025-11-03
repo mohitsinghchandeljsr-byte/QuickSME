@@ -1,0 +1,56 @@
+# Created using wingetcreate
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.4.0.schema.json
+
+PackageIdentifier: MohitSinghChandel.SMETally
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: Mohit Singh Chandel
+PublisherUrl: https://github.com/mohitsinghchandeljsr-byte
+PublisherSupportUrl: https://github.com/mohitsinghchandeljsr-byte/smetally/issues
+Author: Mohit Singh Chandel
+PackageName: SME Tally
+PackageUrl: https://github.com/mohitsinghchandeljsr-byte/smetally
+License: Proprietary
+LicenseUrl: https://github.com/mohitsinghchandeljsr-byte/smetally/blob/main/LICENSE
+Copyright: Copyright (c) 2024 Mohit Singh Chandel
+ShortDescription: Ultra-fast, keyboard-friendly accounting application for Indian SMEs
+Description: |-
+  SME Tally is a blazing-fast, keyboard-friendly web-based accounting application designed specifically for Indian SMEs. 
+  
+  Built as a modern alternative to traditional ERP systems, it features:
+  - Comprehensive GST compliance (CGST, SGST, IGST)
+  - Voucher-based double-entry accounting
+  - Stock management with barcode scanner integration
+  - AI-powered assistant (AIassist) for accounting insights
+  - Developer API platform with webhooks
+  - Enterprise security with role-based access control
+  - Bank reconciliation and expense tracking
+  - Real-time financial reporting
+  
+  Performance: 5-10x faster than SAP, Oracle, Tally, or Microsoft Dynamics for daily operations through aggressive client-side caching, keyboard shortcuts, and optimistic UI updates.
+  
+  Built with React, TypeScript, Express.js, and PostgreSQL.
+Moniker: smetally
+Tags:
+- accounting
+- erp
+- gst
+- invoicing
+- inventory
+- finance
+- business
+- sme
+- india
+- tally
+- double-entry
+- bookkeeping
+- voucher
+- ledger
+- stock-management
+- barcode
+- ai-assistant
+- api
+- webhooks
+- postgresql
+ManifestType: defaultLocale
+ManifestVersion: 1.4.0
