@@ -168,9 +168,24 @@ Preferred communication style: Simple, everyday language.
   - Input validation via Zod schemas
 - **Architect Verified**: Security implementation passes review, addresses Tally's security weaknesses
 
+**AI-Powered Features** (November 3, 2024):
+- **AIassist**: Intelligent AI assistant for accounting insights and questions
+  - Backend: `/api/ai-assist` endpoint with real-time data context (vouchers, ledgers, parties, stock)
+  - OpenAI integration via Replit AI Integrations (charges to credits, no API key needed)
+  - Frontend: Chat interface with conversation history, suggested questions, loading states
+  - User messages on right (blue), AI responses on left (muted)
+  - Keyboard shortcut: ⌘⇧A to open AIassist from anywhere
+  - Features: Answers financial questions, provides insights, GST compliance help, suggests actions
+- **Keyboard Shortcut Manager**: Comprehensive reference page at `/shortcuts`
+  - All shortcuts organized by category (General, Vouchers, Ledgers, Stock, Navigation)
+  - Real-time search to filter shortcuts
+  - Keyboard symbol reference guide
+  - Located in Miscellaneous section of sidebar
+
 **User Experience Improvements**:
 - Fixed accessibility warnings in Command Palette (added DialogTitle and DialogDescription)
 - Added Purchase Orders, Expenses, Bank Reconciliation to main navigation
 - Created dedicated Integrations and Developer sections in sidebar
-- Updated Command Palette to include all new features
+- Updated Command Palette to include all new features including AIassist
 - Reorganized sidebar for better feature discoverability
+- Added ⌘⇧A keyboard shortcut for instant access to AIassist
