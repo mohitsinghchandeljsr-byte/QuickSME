@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Vouchers from "@/pages/vouchers";
+import StockManagement from "@/pages/stock";
 import Reports from "@/pages/reports";
 import Parties from "@/pages/parties";
 import Ledgers from "@/pages/ledgers";
@@ -55,6 +56,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/" component={Dashboard} />
       <Route path="/vouchers" component={Vouchers} />
+      <Route path="/stock" component={StockManagement} />
       <Route path="/reports" component={Reports} />
       <Route path="/parties" component={Parties} />
       <Route path="/ledgers" component={Ledgers} />

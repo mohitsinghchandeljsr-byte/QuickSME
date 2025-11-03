@@ -1,4 +1,4 @@
-import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher } from "@shared/schema";
+import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -18,17 +18,26 @@ export interface IStorage {
   getVouchers(): Promise<Voucher[]>;
   getVoucher(id: string): Promise<Voucher | undefined>;
   createVoucher(voucher: InsertVoucher): Promise<Voucher>;
+
+  // Stock Items
+  getStockItems(): Promise<StockItem[]>;
+  getStockItem(id: string): Promise<StockItem | undefined>;
+  createStockItem(stockItem: InsertStockItem): Promise<StockItem>;
+  updateStockItem(id: string, updates: Partial<StockItem>): Promise<StockItem | undefined>;
+  deleteStockItem(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private ledgers: Map<string, Ledger>;
   private parties: Map<string, Party>;
   private vouchers: Map<string, Voucher>;
+  private stockItems: Map<string, StockItem>;
 
   constructor() {
     this.ledgers = new Map();
     this.parties = new Map();
     this.vouchers = new Map();
+    this.stockItems = new Map();
     this.initializeSampleData();
   }
 
@@ -86,6 +95,76 @@ export class MemStorage implements IStorage {
       },
     ];
     sampleParties.forEach(party => this.parties.set(party.id, party));
+
+    // Sample stock items
+    const sampleStockItems: StockItem[] = [
+      {
+        id: randomUUID(),
+        name: "Laptop - Dell XPS 15",
+        code: "DELL-XPS-15",
+        category: "Electronics",
+        unit: "Pcs",
+        quantity: "25",
+        purchasePrice: "85000",
+        salePrice: "95000",
+        reorderLevel: "10",
+        hsnCode: "8471",
+        gstRate: "18",
+      },
+      {
+        id: randomUUID(),
+        name: "Office Chair - Executive",
+        code: "CHAIR-EXE-001",
+        category: "Furniture",
+        unit: "Pcs",
+        quantity: "50",
+        purchasePrice: "4500",
+        salePrice: "6500",
+        reorderLevel: "15",
+        hsnCode: "9401",
+        gstRate: "18",
+      },
+      {
+        id: randomUUID(),
+        name: "A4 Paper - 500 Sheets",
+        code: "PAPER-A4-500",
+        category: "Stationery",
+        unit: "Reams",
+        quantity: "150",
+        purchasePrice: "180",
+        salePrice: "250",
+        reorderLevel: "50",
+        hsnCode: "4802",
+        gstRate: "12",
+      },
+      {
+        id: randomUUID(),
+        name: "Wireless Mouse",
+        code: "MOUSE-WL-001",
+        category: "Electronics",
+        unit: "Pcs",
+        quantity: "8",
+        purchasePrice: "350",
+        salePrice: "550",
+        reorderLevel: "20",
+        hsnCode: "8471",
+        gstRate: "18",
+      },
+      {
+        id: randomUUID(),
+        name: "Whiteboard Marker",
+        code: "MARKER-WB-BLK",
+        category: "Stationery",
+        unit: "Pcs",
+        quantity: "200",
+        purchasePrice: "15",
+        salePrice: "25",
+        reorderLevel: "100",
+        hsnCode: "9608",
+        gstRate: "12",
+      },
+    ];
+    sampleStockItems.forEach(item => this.stockItems.set(item.id, item));
   }
 
   // Ledger methods
@@ -180,6 +259,48 @@ export class MemStorage implements IStorage {
     };
     this.vouchers.set(id, voucher);
     return voucher;
+  }
+
+  // Stock Item methods
+  async getStockItems(): Promise<StockItem[]> {
+    return Array.from(this.stockItems.values());
+  }
+
+  async getStockItem(id: string): Promise<StockItem | undefined> {
+    return this.stockItems.get(id);
+  }
+
+  async createStockItem(insertStockItem: InsertStockItem): Promise<StockItem> {
+    const id = randomUUID();
+    const stockItem: StockItem = {
+      id,
+      name: insertStockItem.name,
+      code: insertStockItem.code,
+      category: insertStockItem.category,
+      unit: insertStockItem.unit,
+      quantity: insertStockItem.quantity || "0",
+      purchasePrice: insertStockItem.purchasePrice,
+      salePrice: insertStockItem.salePrice,
+      reorderLevel: insertStockItem.reorderLevel || "0",
+      hsnCode: insertStockItem.hsnCode || null,
+      gstRate: insertStockItem.gstRate || null,
+    };
+    this.stockItems.set(id, stockItem);
+    return stockItem;
+  }
+
+  async updateStockItem(id: string, updates: Partial<StockItem>): Promise<StockItem | undefined> {
+    const stockItem = this.stockItems.get(id);
+    if (stockItem) {
+      const updated = { ...stockItem, ...updates };
+      this.stockItems.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  async deleteStockItem(id: string): Promise<void> {
+    this.stockItems.delete(id);
   }
 }
 

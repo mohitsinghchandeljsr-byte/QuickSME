@@ -35,6 +35,20 @@ export const vouchers = pgTable("vouchers", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const stockItems = pgTable("stock_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  code: text("code").notNull(),
+  category: text("category").notNull(),
+  unit: text("unit").notNull(),
+  quantity: decimal("quantity", { precision: 15, scale: 2 }).notNull().default("0"),
+  purchasePrice: decimal("purchase_price", { precision: 15, scale: 2 }).notNull(),
+  salePrice: decimal("sale_price", { precision: 15, scale: 2 }).notNull(),
+  reorderLevel: decimal("reorder_level", { precision: 15, scale: 2 }).default("0"),
+  hsnCode: text("hsn_code"),
+  gstRate: decimal("gst_rate", { precision: 5, scale: 2 }).default("0"),
+});
+
 export const insertLedgerSchema = createInsertSchema(ledgers).omit({
   id: true,
 });
@@ -48,6 +62,10 @@ export const insertVoucherSchema = createInsertSchema(vouchers).omit({
   createdAt: true,
 });
 
+export const insertStockItemSchema = createInsertSchema(stockItems).omit({
+  id: true,
+});
+
 export type InsertLedger = z.infer<typeof insertLedgerSchema>;
 export type Ledger = typeof ledgers.$inferSelect;
 
@@ -56,3 +74,6 @@ export type Party = typeof parties.$inferSelect;
 
 export type InsertVoucher = z.infer<typeof insertVoucherSchema>;
 export type Voucher = typeof vouchers.$inferSelect;
+
+export type InsertStockItem = z.infer<typeof insertStockItemSchema>;
+export type StockItem = typeof stockItems.$inferSelect;

@@ -16,6 +16,7 @@ import {
   Shield,
   ChevronDown,
   ChevronRight,
+  Package,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,6 +51,11 @@ const coreMenuItems = [
     title: "Vouchers",
     url: "/vouchers",
     icon: FileText,
+  },
+  {
+    title: "Stock Management",
+    url: "/stock",
+    icon: Package,
   },
   {
     title: "Reports",

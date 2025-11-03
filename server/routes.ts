@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLedgerSchema, insertPartySchema, insertVoucherSchema } from "@shared/schema";
+import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ledger routes
@@ -97,6 +97,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(voucher);
     } catch (error) {
       res.status(400).json({ error: "Invalid voucher data" });
+    }
+  });
+
+  // Stock Item routes
+  app.get("/api/stock", async (_req, res) => {
+    try {
+      const stockItems = await storage.getStockItems();
+      res.json(stockItems);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch stock items" });
+    }
+  });
+
+  app.get("/api/stock/:id", async (req, res) => {
+    try {
+      const stockItem = await storage.getStockItem(req.params.id);
+      if (!stockItem) {
+        return res.status(404).json({ error: "Stock item not found" });
+      }
+      res.json(stockItem);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch stock item" });
+    }
+  });
+
+  app.post("/api/stock", async (req, res) => {
+    try {
+      const parsed = insertStockItemSchema.parse(req.body);
+      const stockItem = await storage.createStockItem(parsed);
+      res.status(201).json(stockItem);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid stock item data" });
+    }
+  });
+
+  app.patch("/api/stock/:id", async (req, res) => {
+    try {
+      const stockItem = await storage.updateStockItem(req.params.id, req.body);
+      if (!stockItem) {
+        return res.status(404).json({ error: "Stock item not found" });
+      }
+      res.json(stockItem);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update stock item" });
+    }
+  });
+
+  app.delete("/api/stock/:id", async (req, res) => {
+    try {
+      await storage.deleteStockItem(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete stock item" });
     }
   });
 
