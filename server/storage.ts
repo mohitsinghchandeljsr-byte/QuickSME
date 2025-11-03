@@ -1,5 +1,6 @@
-import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem } from "@shared/schema";
+import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem, type ApiKey, type InsertApiKey, type Webhook, type InsertWebhook } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { createHash, randomBytes } from "crypto";
 
 export interface IStorage {
   // Ledgers
@@ -25,6 +26,21 @@ export interface IStorage {
   createStockItem(stockItem: InsertStockItem): Promise<StockItem>;
   updateStockItem(id: string, updates: Partial<StockItem>): Promise<StockItem | undefined>;
   deleteStockItem(id: string): Promise<void>;
+
+  // API Keys
+  getApiKeys(): Promise<ApiKey[]>;
+  getApiKey(id: string): Promise<ApiKey | undefined>;
+  createApiKey(apiKey: InsertApiKey): Promise<{ apiKey: ApiKey; fullKey: string }>;
+  revokeApiKey(id: string): Promise<void>;
+  verifyApiKey(key: string): Promise<ApiKey | null>;
+  incrementApiKeyUsage(id: string): Promise<void>;
+
+  // Webhooks
+  getWebhooks(): Promise<Webhook[]>;
+  getWebhook(id: string): Promise<Webhook | undefined>;
+  createWebhook(webhook: InsertWebhook): Promise<Webhook>;
+  deleteWebhook(id: string): Promise<void>;
+  updateWebhookStats(id: string, success: boolean): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -32,12 +48,16 @@ export class MemStorage implements IStorage {
   private parties: Map<string, Party>;
   private vouchers: Map<string, Voucher>;
   private stockItems: Map<string, StockItem>;
+  private apiKeys: Map<string, ApiKey>;
+  private webhooks: Map<string, Webhook>;
 
   constructor() {
     this.ledgers = new Map();
     this.parties = new Map();
     this.vouchers = new Map();
     this.stockItems = new Map();
+    this.apiKeys = new Map();
+    this.webhooks = new Map();
     this.initializeSampleData();
   }
 
@@ -301,6 +321,115 @@ export class MemStorage implements IStorage {
 
   async deleteStockItem(id: string): Promise<void> {
     this.stockItems.delete(id);
+  }
+
+  // API Key methods
+  async getApiKeys(): Promise<ApiKey[]> {
+    return Array.from(this.apiKeys.values()).filter(key => key.isActive === 1);
+  }
+
+  async getApiKey(id: string): Promise<ApiKey | undefined> {
+    return this.apiKeys.get(id);
+  }
+
+  async createApiKey(insertApiKey: InsertApiKey): Promise<{ apiKey: ApiKey; fullKey: string }> {
+    const id = randomUUID();
+    const keyPrefix = insertApiKey.keyPrefix;
+    const randomPart = randomBytes(24).toString('base64url'); // URL-safe base64
+    const fullKey = `${keyPrefix}_${randomPart}`;
+    const keyHash = createHash('sha256').update(fullKey).digest('hex');
+    const lastFour = randomPart.slice(-4);
+
+    const apiKey: ApiKey = {
+      id,
+      name: insertApiKey.name,
+      keyPrefix: insertApiKey.keyPrefix,
+      keyHash,
+      lastFour,
+      createdAt: new Date(),
+      lastUsedAt: null,
+      requestCount: 0,
+      isActive: 1,
+    };
+    this.apiKeys.set(id, apiKey);
+    return { apiKey, fullKey };
+  }
+
+  async revokeApiKey(id: string): Promise<void> {
+    const apiKey = this.apiKeys.get(id);
+    if (apiKey) {
+      apiKey.isActive = 0;
+      this.apiKeys.set(id, apiKey);
+    }
+  }
+
+  async verifyApiKey(key: string): Promise<ApiKey | null> {
+    const keyHash = createHash('sha256').update(key).digest('hex');
+    const apiKeysList = Array.from(this.apiKeys.values());
+    for (const apiKey of apiKeysList) {
+      if (apiKey.keyHash === keyHash && apiKey.isActive === 1) {
+        return apiKey;
+      }
+    }
+    return null;
+  }
+
+  async incrementApiKeyUsage(id: string): Promise<void> {
+    const apiKey = this.apiKeys.get(id);
+    if (apiKey) {
+      apiKey.requestCount++;
+      apiKey.lastUsedAt = new Date();
+      this.apiKeys.set(id, apiKey);
+    }
+  }
+
+  // Webhook methods
+  async getWebhooks(): Promise<Webhook[]> {
+    return Array.from(this.webhooks.values()).filter(webhook => webhook.isActive === 1);
+  }
+
+  async getWebhook(id: string): Promise<Webhook | undefined> {
+    return this.webhooks.get(id);
+  }
+
+  async createWebhook(insertWebhook: InsertWebhook): Promise<Webhook> {
+    const id = randomUUID();
+    const secret = randomBytes(32).toString('hex'); // Webhook signing secret
+
+    const webhook: Webhook = {
+      id,
+      url: insertWebhook.url,
+      events: insertWebhook.events,
+      secret,
+      isActive: 1,
+      createdAt: new Date(),
+      lastDeliveryAt: null,
+      successCount: 0,
+      failureCount: 0,
+    };
+    this.webhooks.set(id, webhook);
+    return webhook;
+  }
+
+  async deleteWebhook(id: string): Promise<void> {
+    const webhook = this.webhooks.get(id);
+    if (webhook) {
+      webhook.isActive = 0;
+      this.webhooks.set(id, webhook);
+    }
+  }
+
+  async updateWebhookStats(id: string, success: boolean): Promise<void> {
+    const webhook = this.webhooks.get(id);
+    if (webhook) {
+      webhook.lastDeliveryAt = new Date();
+      if (success) {
+        webhook.successCount++;
+      } else {
+        webhook.failureCount++;
+      }
+      this.webhooks.set(id, webhook);
+    }
   }
 }
 

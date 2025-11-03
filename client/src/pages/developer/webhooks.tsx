@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Webhook, Plus, Trash2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import type { Webhook as WebhookType } from "@shared/schema";
 
 export default function Webhooks() {
   const { toast } = useToast();
@@ -30,33 +34,71 @@ export default function Webhooks() {
     { id: "stock.updated", label: "Stock Updated", description: "When stock quantity changes" },
   ];
 
-  const [webhooks] = useState([
-    {
-      id: "1",
-      url: "https://api.example.com/webhook",
-      events: ["voucher.created", "voucher.updated"],
-      status: "active",
-      lastDelivery: "2024-11-03T10:30:00Z",
-      successRate: 98.5,
+  const { data: webhooks = [], isLoading } = useQuery<WebhookType[]>({
+    queryKey: ["/api/webhooks"],
+  });
+
+  const createWebhookMutation = useMutation({
+    mutationFn: async (data: { url: string; events: string[] }) => {
+      return apiRequest<WebhookType>("POST", "/api/webhooks", data);
     },
-    {
-      id: "2",
-      url: "https://hooks.slack.com/services/...",
-      events: ["stock.low"],
-      status: "active",
-      lastDelivery: "2024-11-02T15:45:00Z",
-      successRate: 100,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/webhooks"] });
+      toast({
+        title: "Webhook Created",
+        description: `Webhook configured for ${selectedEvents.length} events`,
+      });
+      setIsDialogOpen(false);
+      setWebhookUrl("");
+      setSelectedEvents([]);
     },
-  ]);
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create webhook",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteWebhookMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/webhooks/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/webhooks"] });
+      toast({
+        title: "Webhook Deleted",
+        description: "The webhook has been deleted successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete webhook",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleCreateWebhook = () => {
-    toast({
-      title: "Webhook Created",
-      description: `Webhook configured for ${selectedEvents.length} events`,
-    });
-    setIsDialogOpen(false);
-    setWebhookUrl("");
-    setSelectedEvents([]);
+    if (!webhookUrl.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a webhook URL",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (selectedEvents.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one event",
+        variant: "destructive",
+      });
+      return;
+    }
+    createWebhookMutation.mutate({ url: webhookUrl, events: selectedEvents });
   };
 
   const toggleEvent = (eventId: string) => {
@@ -66,6 +108,28 @@ export default function Webhooks() {
         : [...prev, eventId]
     );
   };
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return "Never";
+    return new Date(date).toLocaleString('en-GB');
+  };
+
+  const calculateSuccessRate = (webhook: WebhookType) => {
+    const total = webhook.successCount + webhook.failureCount;
+    if (total === 0) return 100;
+    return ((webhook.successCount / total) * 100).toFixed(1);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex items-center gap-2">
+          <Webhook className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-pulse" />
+          <p className="text-sm text-muted-foreground">Loading webhooks...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -90,6 +154,9 @@ export default function Webhooks() {
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create Webhook</DialogTitle>
+                <DialogDescription>
+                  Configure a webhook endpoint to receive real-time event notifications
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -122,13 +189,13 @@ export default function Webhooks() {
                     ))}
                   </div>
                 </div>
-                <Button 
-                  onClick={handleCreateWebhook} 
+                <Button
+                  onClick={handleCreateWebhook}
                   className="w-full"
-                  disabled={!webhookUrl || selectedEvents.length === 0}
+                  disabled={createWebhookMutation.isPending || !webhookUrl || selectedEvents.length === 0}
                   data-testid="button-submit"
                 >
-                  Create Webhook
+                  {createWebhookMutation.isPending ? "Creating..." : "Create Webhook"}
                 </Button>
               </div>
             </DialogContent>
@@ -138,86 +205,75 @@ export default function Webhooks() {
         <Card className="mb-6 p-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
           <h3 className="text-base font-semibold text-foreground mb-2">How Webhooks Work</h3>
           <p className="text-sm text-muted-foreground">
-            When an event occurs, we'll send an HTTP POST request to your configured URL with the event data. 
+            When an event occurs, we'll send an HTTP POST request to your configured URL with the event data.
             Your endpoint should respond with a 2xx status code to acknowledge receipt.
           </p>
         </Card>
 
         <div className="space-y-4">
-          {webhooks.map((webhook, idx) => (
-            <Card key={webhook.id} className="p-6" data-testid={`webhook-card-${idx}`}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <code className="text-sm font-mono text-foreground">{webhook.url}</code>
-                    <Badge variant={webhook.status === "active" ? "default" : "secondary"}>
-                      {webhook.status}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {webhook.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="text-xs">
-                        {event}
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Last delivery: {new Date(webhook.lastDelivery).toLocaleString('en-GB')}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                  data-testid={`button-delete-${idx}`}
-                >
-                  <Trash2 className="w-3 h-3 mr-1" />
-                  Delete
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Success Rate</p>
-                  <p className="text-sm font-semibold text-foreground">{webhook.successRate}%</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Events</p>
-                  <p className="text-sm font-semibold text-foreground">{webhook.events.length}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Status</p>
-                  <p className="text-sm font-semibold text-green-600">Operational</p>
-                </div>
-              </div>
+          {webhooks.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Webhook className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Webhooks Configured</h3>
+              <p className="text-sm text-muted-foreground">
+                Create your first webhook to receive real-time event notifications
+              </p>
             </Card>
-          ))}
-        </div>
-
-        <Card className="mt-6 p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">Webhook Delivery Logs</h3>
-          <div className="space-y-3">
-            {[
-              { event: "voucher.created", status: "success", time: "2024-11-03T10:30:00Z" },
-              { event: "stock.low", status: "success", time: "2024-11-03T09:15:00Z" },
-              { event: "voucher.updated", status: "failed", time: "2024-11-03T08:45:00Z" },
-            ].map((log, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 border border-border rounded-md">
-                <div className="flex items-center gap-3">
-                  {log.status === "success" ? (
-                    <div className="w-2 h-2 rounded-full bg-green-600" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-destructive" />
-                  )}
-                  <code className="text-sm font-mono text-foreground">{log.event}</code>
+          ) : (
+            webhooks.map((webhook, idx) => (
+              <Card key={webhook.id} className="p-6" data-testid={`webhook-card-${idx}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <code className="text-sm font-mono text-foreground">{webhook.url}</code>
+                      <Badge variant={webhook.isActive === 1 ? "default" : "secondary"}>
+                        {webhook.isActive === 1 ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {webhook.events.map((event) => (
+                        <Badge key={event} variant="secondary" className="text-xs">
+                          {event}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Last delivery: {formatDate(webhook.lastDeliveryAt)}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    data-testid={`button-delete-${idx}`}
+                    onClick={() => deleteWebhookMutation.mutate(webhook.id)}
+                    disabled={deleteWebhookMutation.isPending}
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" />
+                    Delete
+                  </Button>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {new Date(log.time).toLocaleString('en-GB')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Success Rate</p>
+                    <p className="text-sm font-semibold text-foreground">{calculateSuccessRate(webhook)}%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Events</p>
+                    <p className="text-sm font-semibold text-foreground">{webhook.events.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Deliveries</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {webhook.successCount + webhook.failureCount}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema } from "@shared/schema";
+import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema, insertApiKeySchema, insertWebhookSchema } from "@shared/schema";
 import { getUncachableGitHubClient } from "./github";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -151,6 +151,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete stock item" });
+    }
+  });
+
+  // API Key routes
+  app.get("/api/api-keys", async (_req, res) => {
+    try {
+      const apiKeys = await storage.getApiKeys();
+      // Never send the key hash to the frontend, only safe metadata
+      const safeKeys = apiKeys.map(({ keyHash, ...safeData }) => safeData);
+      res.json(safeKeys);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch API keys" });
+    }
+  });
+
+  app.post("/api/api-keys", async (req, res) => {
+    try {
+      const parsed = insertApiKeySchema.parse(req.body);
+      const { apiKey, fullKey } = await storage.createApiKey(parsed);
+      // Only return the full key once at creation time
+      const { keyHash, ...safeApiKey } = apiKey;
+      res.status(201).json({ ...safeApiKey, fullKey });
+    } catch (error) {
+      res.status(400).json({ error: "Invalid API key data" });
+    }
+  });
+
+  app.delete("/api/api-keys/:id", async (req, res) => {
+    try {
+      await storage.revokeApiKey(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to revoke API key" });
+    }
+  });
+
+  // Webhook routes
+  app.get("/api/webhooks", async (_req, res) => {
+    try {
+      const webhooks = await storage.getWebhooks();
+      // Don't send the webhook secret to the frontend
+      const safeWebhooks = webhooks.map(({ secret, ...safeData }) => safeData);
+      res.json(safeWebhooks);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch webhooks" });
+    }
+  });
+
+  app.post("/api/webhooks", async (req, res) => {
+    try {
+      const parsed = insertWebhookSchema.parse(req.body);
+      const webhook = await storage.createWebhook(parsed);
+      // Don't send the webhook secret to the frontend
+      const { secret, ...safeWebhook } = webhook;
+      res.status(201).json(safeWebhook);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid webhook data" });
+    }
+  });
+
+  app.delete("/api/webhooks/:id", async (req, res) => {
+    try {
+      await storage.deleteWebhook(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete webhook" });
     }
   });
 
