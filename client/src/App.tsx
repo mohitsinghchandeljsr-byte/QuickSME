@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,8 @@ import Vouchers from "@/pages/vouchers";
 import Reports from "@/pages/reports";
 import Parties from "@/pages/parties";
 import Ledgers from "@/pages/ledgers";
+import Login from "@/pages/login";
+import Settings from "@/pages/settings";
 
 import RevenueForecaster from "@/pages/tools/revenue-forecaster";
 import GSTCalculator from "@/pages/tools/gst-calculator";
@@ -27,15 +29,36 @@ import GSTR2A from "@/pages/gst/gstr2a";
 import GSTR2B from "@/pages/gst/gstr2b";
 import GSTR3B from "@/pages/gst/gstr3b";
 import EInvoice from "@/pages/gst/e-invoice";
+import { useEffect } from "react";
 
 function Router() {
+  const [location, setLocation] = useLocation();
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+
+  useEffect(() => {
+    if (!isAuthenticated && location !== "/login") {
+      setLocation("/login");
+    }
+  }, [isAuthenticated, location, setLocation]);
+
+  if (!isAuthenticated) {
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route component={Login} />
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
+      <Route path="/login" component={Login} />
       <Route path="/" component={Dashboard} />
       <Route path="/vouchers" component={Vouchers} />
       <Route path="/reports" component={Reports} />
       <Route path="/parties" component={Parties} />
       <Route path="/ledgers" component={Ledgers} />
+      <Route path="/settings" component={Settings} />
       
       <Route path="/tools/revenue-forecaster" component={RevenueForecaster} />
       <Route path="/tools/gst-calculator" component={GSTCalculator} />
@@ -63,6 +86,19 @@ export default function App() {
     "--sidebar-width": "15rem",
   };
 
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+
+  if (!isAuthenticated) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Router />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -73,7 +109,7 @@ export default function App() {
               <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
                 <SidebarTrigger data-testid="button-sidebar-toggle" />
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Demo Company Ltd.</span>
+                  <span className="text-sm text-muted-foreground">{localStorage.getItem("companyName") || "Demo Company Ltd."}</span>
                 </div>
               </header>
               <main className="flex-1 overflow-hidden">

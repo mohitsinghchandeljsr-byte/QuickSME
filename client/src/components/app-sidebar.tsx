@@ -14,6 +14,8 @@ import {
   FileCheck,
   FolderOpen,
   Shield,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,10 +26,19 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "wouter";
+import { useState } from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const coreMenuItems = [
   {
@@ -133,85 +144,129 @@ const gstComplianceItems = [
 
 export function AppSidebar() {
   const [location] = useLocation();
+  const [openSections, setOpenSections] = useState({
+    main: true,
+    businessTools: false,
+    templates: false,
+    gst: false,
+  });
+
+  const companyName = localStorage.getItem("companyName") || "Demo Company Ltd.";
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <h2 className="text-lg font-semibold text-sidebar-foreground">SME Accounts</h2>
-        <p className="text-xs text-muted-foreground">Demo Company Ltd.</p>
+        <p className="text-xs text-muted-foreground">{companyName}</p>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {coreMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span className="text-sm">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <Collapsible open={openSections.main} onOpenChange={(open) => setOpenSections({...openSections, main: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Main</span>
+                {openSections.main ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {coreMenuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Business Tools</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {businessToolsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span className="text-sm">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <Collapsible open={openSections.businessTools} onOpenChange={(open) => setOpenSections({...openSections, businessTools: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Business Tools</span>
+                {openSections.businessTools ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {businessToolsItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Templates</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {templateItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span className="text-sm">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <Collapsible open={openSections.templates} onOpenChange={(open) => setOpenSections({...openSections, templates: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Templates</span>
+                {openSections.templates ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {templateItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>GST Compliance</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {gstComplianceItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span className="text-sm">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <Collapsible open={openSections.gst} onOpenChange={(open) => setOpenSections({...openSections, gst: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">GST Compliance</span>
+                {openSections.gst ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {gstComplianceItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
         <SidebarGroup>
           <SidebarGroupContent>

@@ -1,0 +1,28 @@
+1. Ledgers
+You can create ledgers in Tally for all your financial transactions.. You can also create separate ledgers for each business or client account. For example – You can start a ledger for your bank account or a ledger for how much a client owes you in Tally. 
+
+There are two types of ledger accounts in Tally:
+
+Cash
+Profit and Loss Account
+These ledgers are already included in the Tally ERP 9. You can create and add more ledgers according to your requirements.
+
+2. Vouchers
+Vouchers are documents that consist of all the details regarding a financial transaction. This software comes with several types of vouchers such as:
+
+Contra Vouchers: These are transactions that record the inflows of cash from the bank and vice versa. 
+Payment Vouchers: These vouchers record transactions that are made to a third party.
+Receipt Vouchers: These vouchers help to record the flow of cash within an organization.
+Advantages of Tally
+Tally has made complex calculations easy and reduced error rates. It can be customized depending on your organization’s needs to give accurate solutions. The following are some of the advantages of Tally for your business: 
+
+Tally offers exceptional safety and security features. This means people will not be able to tamper with your data.
+Tally helps you in calculating the salaries of employees of your organization by including net deductions, bonuses, and tax deductions. 
+Tally software is used in the banking industry to calculate the interest on loans or deposits. The software makes complex calculations easier and makes banking much simpler. 
+The software ensures that data entered across all geographical locations remains accurate and consistent. This means organizations that are spread globally, will see uniform data in the software in all countries. 
+Tally ensures that small companies work within a budget. It helps you ensure that your company stays within the allocated budget. 
+The software helps companies file tax returns every year ensuring it complies with the updated GST norms. 
+Employees of an organization from anywhere in the world can access the data on this software with their unique User ID and password which makes using the software flexible. 
+You can find all your old documents in the archive folder of Tally. It saves all your bills, vouchers, and receipts which can be easily retrieved if needed. 
+It is cost-effective software that ensures that all financial transactions are running smoothly. 
+With the latest version of Tally software, you can digitize your signature and bills.
