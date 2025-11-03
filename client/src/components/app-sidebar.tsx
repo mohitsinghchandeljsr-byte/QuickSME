@@ -21,6 +21,7 @@ import {
   ScrollText,
   Scan,
   Database,
+  Bot,
 } from "lucide-react";
 import {
   Sidebar,
@@ -52,6 +53,11 @@ const coreMenuItems = [
     title: "Dashboard",
     url: "/",
     icon: Home,
+  },
+  {
+    title: "AIassist",
+    url: "/ai-assistant",
+    icon: Bot,
   },
   {
     title: "Vouchers",

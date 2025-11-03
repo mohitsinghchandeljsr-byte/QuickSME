@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { CommandPalette } from "@/components/command-palette";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
+import AIAssistant from "@/pages/ai-assistant";
 import Vouchers from "@/pages/vouchers";
 import StockManagement from "@/pages/stock";
 import Reports from "@/pages/reports";
@@ -69,6 +70,7 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/" component={Dashboard} />
+      <Route path="/ai-assistant" component={AIAssistant} />
       <Route path="/vouchers" component={Vouchers} />
       <Route path="/stock" component={StockManagement} />
       <Route path="/reports" component={Reports} />

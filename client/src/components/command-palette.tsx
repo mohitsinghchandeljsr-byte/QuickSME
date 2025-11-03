@@ -37,6 +37,7 @@ import {
   Code,
   Key,
   Webhook,
+  Bot,
 } from "lucide-react";
 
 export function CommandPalette() {
@@ -90,6 +91,7 @@ export function CommandPalette() {
       group: "Navigation",
       items: [
         { name: "Dashboard", icon: Home, url: "/", shortcut: "" },
+        { name: "AIassist", icon: Bot, url: "/ai-assistant", shortcut: "" },
         { name: "Vouchers", icon: FileText, url: "/vouchers", shortcut: "⌘⇧N" },
         { name: "Stock Management", icon: Package, url: "/stock", shortcut: "⌘⇧S" },
         { name: "Reports", icon: BarChart3, url: "/reports", shortcut: "⌘⇧R" },

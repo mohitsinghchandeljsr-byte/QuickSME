@@ -220,6 +220,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Assistant routes
+  app.post("/api/ai-assist", async (req, res) => {
+    try {
+      const { message, conversationHistory = [] } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      // Import OpenAI dynamically
+      const { default: OpenAI } = await import('openai');
+      
+      const openai = new OpenAI({
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+      });
+
+      // Gather current accounting data for context
+      const [vouchers, parties, ledgers, stockItems] = await Promise.all([
+        storage.getVouchers(),
+        storage.getParties(),
+        storage.getLedgers(),
+        storage.getStockItems(),
+      ]);
+
+      // Calculate summary statistics
+      const totalVouchers = vouchers.length;
+      const totalRevenue = vouchers
+        .filter(v => v.type === 'sales')
+        .reduce((sum, v) => sum + v.amount, 0);
+      const totalExpenses = vouchers
+        .filter(v => v.type === 'payment' || v.type === 'purchase')
+        .reduce((sum, v) => sum + v.amount, 0);
+      const lowStockItems = stockItems.filter(item => item.quantity <= item.reorderLevel);
+      const totalParties = parties.length;
+      const customers = parties.filter(p => p.type === 'customer').length;
+      const vendors = parties.filter(p => p.type === 'vendor').length;
+
+      // Create system prompt with accounting context
+      const systemPrompt = `You are AIassist, an intelligent accounting assistant for an Indian SME accounting application. You help users manage their finances, understand their data, and provide actionable insights.
+
+Current Business Overview:
+- Total Vouchers: ${totalVouchers}
+- Total Revenue: ₹${totalRevenue.toLocaleString('en-IN')}
+- Total Expenses: ₹${totalExpenses.toLocaleString('en-IN')}
+- Net Income: ₹${(totalRevenue - totalExpenses).toLocaleString('en-IN')}
+- Total Parties: ${totalParties} (${customers} customers, ${vendors} vendors)
+- Stock Items: ${stockItems.length} (${lowStockItems.length} below reorder level)
+- Ledgers: ${ledgers.length}
+
+Recent Vouchers (last 5):
+${vouchers.slice(-5).map(v => `- ${v.voucherNumber}: ${v.type} of ₹${v.amount.toLocaleString('en-IN')} on ${new Date(v.date).toLocaleDateString('en-IN')}`).join('\n')}
+
+Low Stock Items:
+${lowStockItems.length > 0 ? lowStockItems.map(item => `- ${item.name}: ${item.quantity} units (reorder at ${item.reorderLevel})`).join('\n') : 'None'}
+
+Your capabilities:
+1. Answer questions about financial data and transactions
+2. Provide business insights and recommendations
+3. Help with GST compliance and tax calculations
+4. Explain accounting concepts in simple terms
+5. Suggest actions to improve cash flow and profitability
+6. Alert about low stock and pending payments
+
+Always respond in a helpful, professional manner. Use Indian number formatting (₹) and date formats. Keep responses concise but informative.`;
+
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        ...conversationHistory,
+        { role: 'user', content: message },
+      ];
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: messages as any,
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+
+      const assistantMessage = completion.choices[0]?.message?.content || 'I apologize, but I could not generate a response.';
+
+      res.json({
+        message: assistantMessage,
+        conversationHistory: [
+          ...conversationHistory,
+          { role: 'user', content: message },
+          { role: 'assistant', content: assistantMessage },
+        ],
+      });
+    } catch (error) {
+      console.error('AI Assistant error:', error);
+      res.status(500).json({ error: "Failed to process AI request" });
+    }
+  });
+
   // GitHub routes
   app.get("/api/github/user", async (_req, res) => {
     try {
