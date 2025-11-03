@@ -23,6 +23,10 @@ import GSTCalculator from "@/pages/tools/gst-calculator";
 import Cashflow from "@/pages/tools/cashflow";
 import BarcodeScanner from "@/pages/barcode-scanner";
 import BackupRestore from "@/pages/backup-restore";
+import Notes from "@/pages/notes";
+import PurchaseOrders from "@/pages/purchase-orders";
+import Expenses from "@/pages/expenses";
+import BankReconciliation from "@/pages/bank-reconciliation";
 
 import InvoiceTemplate from "@/pages/templates/invoice";
 import QuotationGenerator from "@/pages/templates/quotation";
@@ -72,6 +76,10 @@ function Router() {
       <Route path="/tools/revenue-forecaster" component={RevenueForecaster} />
       <Route path="/tools/gst-calculator" component={GSTCalculator} />
       <Route path="/tools/cashflow" component={Cashflow} />
+      <Route path="/purchase-orders" component={PurchaseOrders} />
+      <Route path="/expenses" component={Expenses} />
+      <Route path="/bank-reconciliation" component={BankReconciliation} />
+      <Route path="/notes" component={Notes} />
       <Route path="/barcode-scanner" component={BarcodeScanner} />
       <Route path="/backup-restore" component={BackupRestore} />
       

@@ -45,6 +45,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+import { StickyNote, ShoppingCart } from "lucide-react";
+
 const coreMenuItems = [
   {
     title: "Dashboard",
@@ -60,6 +62,21 @@ const coreMenuItems = [
     title: "Stock Management",
     url: "/stock",
     icon: Package,
+  },
+  {
+    title: "Purchase Orders",
+    url: "/purchase-orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Expenses",
+    url: "/expenses",
+    icon: Wallet,
+  },
+  {
+    title: "Bank Reconciliation",
+    url: "/bank-reconciliation",
+    icon: Building2,
   },
   {
     title: "Reports",
@@ -163,6 +180,11 @@ const gstComplianceItems = [
 ];
 
 const miscellaneousItems = [
+  {
+    title: "Notes",
+    url: "/notes",
+    icon: StickyNote,
+  },
   {
     title: "Barcode Scanner",
     url: "/barcode-scanner",
