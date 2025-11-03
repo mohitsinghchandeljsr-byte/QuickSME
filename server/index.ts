@@ -4,6 +4,15 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Detect production mode: check both NODE_ENV and REPLIT_DEPLOYMENT
+const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
+if (isProduction) {
+  app.set('env', 'production');
+  log('Running in PRODUCTION mode');
+} else {
+  log('Running in DEVELOPMENT mode');
+}
+
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown
@@ -47,7 +56,20 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  const startTime = Date.now();
+  log('Starting server initialization...');
+  
   const server = await registerRoutes(app);
+  log(`Routes registered in ${Date.now() - startTime}ms`);
+
+  // Health check endpoint for deployment monitoring
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({ 
+      status: 'ok', 
+      environment: app.get('env'),
+      uptime: process.uptime()
+    });
+  });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -61,9 +83,13 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
+    log('Setting up Vite development server...');
     await setupVite(app, server);
+    log('Vite development server ready');
   } else {
+    log('Setting up static file serving...');
     serveStatic(app);
+    log('Static file serving ready');
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
@@ -76,6 +102,9 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    const totalStartup = Date.now() - startTime;
+    log(`Server ready on port ${port} (startup: ${totalStartup}ms)`);
+    log(`Environment: ${app.get('env')}`);
+    log(`Health check available at /api/health`);
   });
 })();
