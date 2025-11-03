@@ -179,18 +179,44 @@ const gstComplianceItems = [
   },
 ];
 
-import { Github } from "lucide-react";
+import { Github, Blocks, Code2, Key, Webhook } from "lucide-react";
+
+const integrationsItems = [
+  {
+    title: "All Integrations",
+    url: "/integrations",
+    icon: Blocks,
+  },
+  {
+    title: "GitHub",
+    url: "/github",
+    icon: Github,
+  },
+];
+
+const developerItems = [
+  {
+    title: "API Documentation",
+    url: "/developer/api-docs",
+    icon: Code2,
+  },
+  {
+    title: "API Keys",
+    url: "/developer/api-keys",
+    icon: Key,
+  },
+  {
+    title: "Webhooks",
+    url: "/developer/webhooks",
+    icon: Webhook,
+  },
+];
 
 const miscellaneousItems = [
   {
     title: "Notes",
     url: "/notes",
     icon: StickyNote,
-  },
-  {
-    title: "GitHub Integration",
-    url: "/github",
-    icon: Github,
   },
   {
     title: "Barcode Scanner",
@@ -211,6 +237,8 @@ export function AppSidebar() {
     businessTools: false,
     templates: false,
     gst: false,
+    integrations: false,
+    developer: false,
     miscellaneous: false,
   });
 
@@ -316,6 +344,60 @@ export function AppSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {gstComplianceItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <Collapsible open={openSections.integrations} onOpenChange={(open) => setOpenSections({...openSections, integrations: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Integrations</span>
+                {openSections.integrations ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {integrationsItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <Collapsible open={openSections.developer} onOpenChange={(open) => setOpenSections({...openSections, developer: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Developer</span>
+                {openSections.developer ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {developerItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
                         <Link href={item.url}>

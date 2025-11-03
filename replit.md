@@ -142,9 +142,18 @@ Preferred communication style: Simple, everyday language.
 - Sync accounting data with specific repositories
 - Repository metadata display (stars, forks, branches, language)
 
+**Integrations & Developer Platform**:
+- **Integrations Hub**: Centralized page for connecting external tools (Notion, Trello, Evernote, GitHub)
+- **Developer Portal**: Complete API platform for building custom apps and integrations
+  - **API Documentation**: Full REST API reference with code examples
+  - **API Keys**: Generate and manage API keys for programmatic access
+  - **Webhooks**: Subscribe to real-time events (voucher.created, stock.low, etc.)
+- **GitHub Integration**: Already connected via Replit's OAuth system
+- **Note**: Notion integration requires manual API key setup (Replit connector dismissed by user)
+
 **User Experience Improvements**:
 - Fixed accessibility warnings in Command Palette (added DialogTitle and DialogDescription)
 - Added Purchase Orders, Expenses, Bank Reconciliation to main navigation
-- Moved Notes and GitHub Integration to Miscellaneous section
+- Created dedicated Integrations and Developer sections in sidebar
 - Updated Command Palette to include all new features
 - Reorganized sidebar for better feature discoverability

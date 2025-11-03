@@ -33,6 +33,10 @@ import {
   Plus,
   StickyNote,
   Github,
+  Blocks,
+  Code,
+  Key,
+  Webhook,
 } from "lucide-react";
 
 export function CommandPalette() {
@@ -119,10 +123,24 @@ export function CommandPalette() {
       ],
     },
     {
+      group: "Integrations",
+      items: [
+        { name: "All Integrations", icon: Blocks, url: "/integrations", shortcut: "" },
+        { name: "GitHub", icon: Github, url: "/github", shortcut: "" },
+      ],
+    },
+    {
+      group: "Developer",
+      items: [
+        { name: "API Documentation", icon: Code, url: "/developer/api-docs", shortcut: "" },
+        { name: "API Keys", icon: Key, url: "/developer/api-keys", shortcut: "" },
+        { name: "Webhooks", icon: Webhook, url: "/developer/webhooks", shortcut: "" },
+      ],
+    },
+    {
       group: "Miscellaneous",
       items: [
         { name: "Notes", icon: StickyNote, url: "/notes", shortcut: "" },
-        { name: "GitHub Integration", icon: Github, url: "/github", shortcut: "" },
         { name: "Barcode Scanner", icon: Scan, url: "/barcode-scanner", shortcut: "⌘⇧B" },
         { name: "Backup & Restore", icon: Database, url: "/backup-restore", shortcut: "" },
       ],

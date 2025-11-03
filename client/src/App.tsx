@@ -28,6 +28,10 @@ import PurchaseOrders from "@/pages/purchase-orders";
 import Expenses from "@/pages/expenses";
 import BankReconciliation from "@/pages/bank-reconciliation";
 import GitHubIntegration from "@/pages/github-integration";
+import Integrations from "@/pages/integrations";
+import APIDocs from "@/pages/developer/api-documentation";
+import APIKeys from "@/pages/developer/api-keys";
+import Webhooks from "@/pages/developer/webhooks";
 
 import InvoiceTemplate from "@/pages/templates/invoice";
 import QuotationGenerator from "@/pages/templates/quotation";
@@ -82,6 +86,10 @@ function Router() {
       <Route path="/bank-reconciliation" component={BankReconciliation} />
       <Route path="/notes" component={Notes} />
       <Route path="/github" component={GitHubIntegration} />
+      <Route path="/integrations" component={Integrations} />
+      <Route path="/developer/api-docs" component={APIDocs} />
+      <Route path="/developer/api-keys" component={APIKeys} />
+      <Route path="/developer/webhooks" component={Webhooks} />
       <Route path="/barcode-scanner" component={BarcodeScanner} />
       <Route path="/backup-restore" component={BackupRestore} />
       
