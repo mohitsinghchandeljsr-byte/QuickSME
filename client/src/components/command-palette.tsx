@@ -38,6 +38,7 @@ import {
   Key,
   Webhook,
   Bot,
+  Keyboard,
 } from "lucide-react";
 
 export function CommandPalette() {
@@ -75,6 +76,11 @@ export function CommandPalette() {
         e.preventDefault();
         setLocation("/barcode-scanner");
       }
+      
+      if (e.key === "a" && (e.metaKey || e.ctrlKey) && e.shiftKey) {
+        e.preventDefault();
+        setLocation("/ai-assistant");
+      }
     };
 
     document.addEventListener("keydown", down);
@@ -91,7 +97,7 @@ export function CommandPalette() {
       group: "Navigation",
       items: [
         { name: "Dashboard", icon: Home, url: "/", shortcut: "" },
-        { name: "AIassist", icon: Bot, url: "/ai-assistant", shortcut: "" },
+        { name: "AIassist", icon: Bot, url: "/ai-assistant", shortcut: "⌘⇧A" },
         { name: "Vouchers", icon: FileText, url: "/vouchers", shortcut: "⌘⇧N" },
         { name: "Stock Management", icon: Package, url: "/stock", shortcut: "⌘⇧S" },
         { name: "Reports", icon: BarChart3, url: "/reports", shortcut: "⌘⇧R" },
@@ -142,6 +148,7 @@ export function CommandPalette() {
     {
       group: "Miscellaneous",
       items: [
+        { name: "Keyboard Shortcuts", icon: Keyboard, url: "/shortcuts", shortcut: "" },
         { name: "Notes", icon: StickyNote, url: "/notes", shortcut: "" },
         { name: "Barcode Scanner", icon: Scan, url: "/barcode-scanner", shortcut: "⌘⇧B" },
         { name: "Backup & Restore", icon: Database, url: "/backup-restore", shortcut: "" },

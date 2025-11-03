@@ -18,6 +18,7 @@ import Login from "@/pages/login";
 import Settings from "@/pages/settings";
 import UserManagement from "@/pages/user-management";
 import AuditLog from "@/pages/audit-log";
+import ShortcutManager from "@/pages/shortcut-manager";
 
 import RevenueForecaster from "@/pages/tools/revenue-forecaster";
 import GSTCalculator from "@/pages/tools/gst-calculator";
@@ -94,6 +95,7 @@ function Router() {
       <Route path="/developer/webhooks" component={Webhooks} />
       <Route path="/barcode-scanner" component={BarcodeScanner} />
       <Route path="/backup-restore" component={BackupRestore} />
+      <Route path="/shortcuts" component={ShortcutManager} />
       
       <Route path="/templates/invoice" component={InvoiceTemplate} />
       <Route path="/templates/quotation" component={QuotationGenerator} />

@@ -37,10 +37,16 @@ export default function AIAssistant() {
   const chatMutation = useMutation({
     mutationFn: async (data: { message: string; conversationHistory: Message[] }) => {
       const response = await apiRequest("POST", "/api/ai-assist", data);
-      return response as AIResponse;
+      console.log('AI Response:', response);
+      return response as unknown as AIResponse;
     },
     onSuccess: (data) => {
-      setMessages(data.conversationHistory);
+      console.log('Success data:', data);
+      if (data?.conversationHistory && Array.isArray(data.conversationHistory)) {
+        setMessages(data.conversationHistory);
+      } else {
+        console.error('Invalid response format:', data);
+      }
       setInput("");
     },
     onError: () => {
@@ -97,7 +103,7 @@ export default function AIAssistant() {
 
       <div className="flex-1 overflow-hidden p-6">
         <div className="h-full flex flex-col gap-4">
-          {messages.length === 0 ? (
+          {!messages || messages.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center max-w-2xl">
                 <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-950 mx-auto mb-4">

@@ -22,6 +22,7 @@ import {
   Scan,
   Database,
   Bot,
+  Keyboard,
 } from "lucide-react";
 import {
   Sidebar,
@@ -219,6 +220,11 @@ const developerItems = [
 ];
 
 const miscellaneousItems = [
+  {
+    title: "Keyboard Shortcuts",
+    url: "/shortcuts",
+    icon: Keyboard,
+  },
   {
     title: "Notes",
     url: "/notes",
