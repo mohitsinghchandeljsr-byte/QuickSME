@@ -37,15 +37,12 @@ export default function AIAssistant() {
   const chatMutation = useMutation({
     mutationFn: async (data: { message: string; conversationHistory: Message[] }) => {
       const response = await apiRequest("POST", "/api/ai-assist", data);
-      console.log('AI Response:', response);
-      return response as unknown as AIResponse;
+      const json = await response.json();
+      return json as AIResponse;
     },
     onSuccess: (data) => {
-      console.log('Success data:', data);
       if (data?.conversationHistory && Array.isArray(data.conversationHistory)) {
         setMessages(data.conversationHistory);
-      } else {
-        console.error('Invalid response format:', data);
       }
       setInput("");
     },
