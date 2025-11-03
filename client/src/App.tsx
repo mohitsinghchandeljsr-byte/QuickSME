@@ -12,6 +12,22 @@ import Reports from "@/pages/reports";
 import Parties from "@/pages/parties";
 import Ledgers from "@/pages/ledgers";
 
+import RevenueForecaster from "@/pages/tools/revenue-forecaster";
+import GSTCalculator from "@/pages/tools/gst-calculator";
+import Cashflow from "@/pages/tools/cashflow";
+
+import InvoiceTemplate from "@/pages/templates/invoice";
+import QuotationGenerator from "@/pages/templates/quotation";
+import AccountingTemplates from "@/pages/templates/accounting";
+
+import GSTRegistration from "@/pages/gst/registration";
+import FileGSTReturns from "@/pages/gst/returns";
+import GSTR1 from "@/pages/gst/gstr1";
+import GSTR2A from "@/pages/gst/gstr2a";
+import GSTR2B from "@/pages/gst/gstr2b";
+import GSTR3B from "@/pages/gst/gstr3b";
+import EInvoice from "@/pages/gst/e-invoice";
+
 function Router() {
   return (
     <Switch>
@@ -20,6 +36,23 @@ function Router() {
       <Route path="/reports" component={Reports} />
       <Route path="/parties" component={Parties} />
       <Route path="/ledgers" component={Ledgers} />
+      
+      <Route path="/tools/revenue-forecaster" component={RevenueForecaster} />
+      <Route path="/tools/gst-calculator" component={GSTCalculator} />
+      <Route path="/tools/cashflow" component={Cashflow} />
+      
+      <Route path="/templates/invoice" component={InvoiceTemplate} />
+      <Route path="/templates/quotation" component={QuotationGenerator} />
+      <Route path="/templates/accounting" component={AccountingTemplates} />
+      
+      <Route path="/gst/registration" component={GSTRegistration} />
+      <Route path="/gst/returns" component={FileGSTReturns} />
+      <Route path="/gst/gstr1" component={GSTR1} />
+      <Route path="/gst/gstr2a" component={GSTR2A} />
+      <Route path="/gst/gstr2b" component={GSTR2B} />
+      <Route path="/gst/gstr3b" component={GSTR3B} />
+      <Route path="/gst/e-invoice" component={EInvoice} />
+      
       <Route component={NotFound} />
     </Switch>
   );

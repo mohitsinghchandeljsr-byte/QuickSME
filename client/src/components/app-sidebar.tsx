@@ -1,4 +1,20 @@
-import { Home, FileText, BarChart3, Users, Building2, Settings } from "lucide-react";
+import {
+  Home,
+  FileText,
+  BarChart3,
+  Users,
+  Building2,
+  Settings,
+  TrendingUp,
+  Calculator,
+  Wallet,
+  FileSpreadsheet,
+  Receipt,
+  ClipboardList,
+  FileCheck,
+  FolderOpen,
+  Shield,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,36 +29,105 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "wouter";
 
-const menuItems = [
+const coreMenuItems = [
   {
     title: "Dashboard",
     url: "/",
     icon: Home,
-    shortcut: "Alt+D",
   },
   {
     title: "Vouchers",
     url: "/vouchers",
     icon: FileText,
-    shortcut: "F2",
   },
   {
     title: "Reports",
     url: "/reports",
     icon: BarChart3,
-    shortcut: "Alt+R",
   },
   {
     title: "Parties",
     url: "/parties",
     icon: Users,
-    shortcut: "Alt+P",
   },
   {
     title: "Ledgers",
     url: "/ledgers",
     icon: Building2,
-    shortcut: "Alt+L",
+  },
+];
+
+const businessToolsItems = [
+  {
+    title: "Revenue Forecaster",
+    url: "/tools/revenue-forecaster",
+    icon: TrendingUp,
+  },
+  {
+    title: "GST Calculator",
+    url: "/tools/gst-calculator",
+    icon: Calculator,
+  },
+  {
+    title: "Cashflow Generator",
+    url: "/tools/cashflow",
+    icon: Wallet,
+  },
+];
+
+const templateItems = [
+  {
+    title: "Invoice Template",
+    url: "/templates/invoice",
+    icon: Receipt,
+  },
+  {
+    title: "Quotation Generator",
+    url: "/templates/quotation",
+    icon: FileSpreadsheet,
+  },
+  {
+    title: "Accounting Templates",
+    url: "/templates/accounting",
+    icon: ClipboardList,
+  },
+];
+
+const gstComplianceItems = [
+  {
+    title: "GST Registration",
+    url: "/gst/registration",
+    icon: FileCheck,
+  },
+  {
+    title: "File GST Returns",
+    url: "/gst/returns",
+    icon: FolderOpen,
+  },
+  {
+    title: "GSTR-1",
+    url: "/gst/gstr1",
+    icon: FileText,
+  },
+  {
+    title: "GSTR-2A Reconciliation",
+    url: "/gst/gstr2a",
+    icon: FileText,
+  },
+  {
+    title: "GSTR-2B Reconciliation",
+    url: "/gst/gstr2b",
+    icon: FileText,
+  },
+  {
+    title: "GSTR-3B",
+    url: "/gst/gstr3b",
+    icon: FileText,
+  },
+  {
+    title: "Generate e-Invoice",
+    url: "/gst/e-invoice",
+    icon: Shield,
   },
 ];
 
@@ -57,18 +142,15 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {coreMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase()}`}>
+                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                      <span className="ml-auto text-xs font-mono text-muted-foreground">
-                        {item.shortcut}
-                      </span>
+                      <span className="text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -76,6 +158,61 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Business Tools</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {businessToolsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <Link href={item.url}>
+                      <item.icon className="w-4 h-4" />
+                      <span className="text-sm">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Templates</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {templateItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <Link href={item.url}>
+                      <item.icon className="w-4 h-4" />
+                      <span className="text-sm">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>GST Compliance</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {gstComplianceItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <Link href={item.url}>
+                      <item.icon className="w-4 h-4" />
+                      <span className="text-sm">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -83,7 +220,7 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild data-testid="nav-settings">
                   <Link href="/settings">
                     <Settings className="w-4 h-4" />
-                    <span>Settings</span>
+                    <span className="text-sm">Settings</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
