@@ -19,6 +19,8 @@ import {
   Package,
   UserCheck,
   ScrollText,
+  Scan,
+  Database,
 } from "lucide-react";
 import {
   Sidebar,
@@ -160,6 +162,19 @@ const gstComplianceItems = [
   },
 ];
 
+const miscellaneousItems = [
+  {
+    title: "Barcode Scanner",
+    url: "/barcode-scanner",
+    icon: Scan,
+  },
+  {
+    title: "Backup & Restore",
+    url: "/backup-restore",
+    icon: Database,
+  },
+];
+
 export function AppSidebar() {
   const [location] = useLocation();
   const [openSections, setOpenSections] = useState({
@@ -167,6 +182,7 @@ export function AppSidebar() {
     businessTools: false,
     templates: false,
     gst: false,
+    miscellaneous: false,
   });
 
   const companyName = localStorage.getItem("companyName") || "Demo Company Ltd.";
@@ -271,6 +287,33 @@ export function AppSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {gstComplianceItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <Link href={item.url}>
+                          <item.icon className="w-4 h-4" />
+                          <span className="text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+        <Collapsible open={openSections.miscellaneous} onOpenChange={(open) => setOpenSections({...openSections, miscellaneous: open})}>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
+                <span className="font-bold">Miscellaneous</span>
+                {openSections.miscellaneous ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {miscellaneousItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={location === item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
                         <Link href={item.url}>

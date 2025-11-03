@@ -20,6 +20,8 @@ import AuditLog from "@/pages/audit-log";
 import RevenueForecaster from "@/pages/tools/revenue-forecaster";
 import GSTCalculator from "@/pages/tools/gst-calculator";
 import Cashflow from "@/pages/tools/cashflow";
+import BarcodeScanner from "@/pages/barcode-scanner";
+import BackupRestore from "@/pages/backup-restore";
 
 import InvoiceTemplate from "@/pages/templates/invoice";
 import QuotationGenerator from "@/pages/templates/quotation";
@@ -69,6 +71,8 @@ function Router() {
       <Route path="/tools/revenue-forecaster" component={RevenueForecaster} />
       <Route path="/tools/gst-calculator" component={GSTCalculator} />
       <Route path="/tools/cashflow" component={Cashflow} />
+      <Route path="/barcode-scanner" component={BarcodeScanner} />
+      <Route path="/backup-restore" component={BackupRestore} />
       
       <Route path="/templates/invoice" component={InvoiceTemplate} />
       <Route path="/templates/quotation" component={QuotationGenerator} />
