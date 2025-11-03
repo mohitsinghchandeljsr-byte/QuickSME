@@ -4,20 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import type { Ledger } from "@shared/schema";
 
 export default function Ledgers() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const ledgers = [
-    { name: "Cash in Hand", group: "Cash-in-Hand", balance: "₹1,25,000", type: "Dr" },
-    { name: "HDFC Bank", group: "Bank Accounts", balance: "₹2,87,500", type: "Dr" },
-    { name: "Sales Revenue", group: "Sales Accounts", balance: "₹12,45,000", type: "Cr" },
-    { name: "Purchase Account", group: "Purchase Accounts", balance: "₹8,32,500", type: "Dr" },
-    { name: "Electricity Expense", group: "Indirect Expenses", balance: "₹15,200", type: "Dr" },
-    { name: "Rent Expense", group: "Indirect Expenses", balance: "₹45,000", type: "Dr" },
-    { name: "GST Input", group: "Duties & Taxes", balance: "₹62,400", type: "Dr" },
-    { name: "GST Output", group: "Duties & Taxes", balance: "₹1,18,800", type: "Cr" },
-  ];
+  const { data: ledgers, isLoading } = useQuery<Ledger[]>({
+    queryKey: ["/api/ledgers"],
+  });
+
+  const filteredLedgers = ledgers?.filter(ledger =>
+    ledger.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    ledger.group.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -48,55 +48,61 @@ export default function Ledgers() {
           </div>
         </div>
 
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted border-b border-border">
-                <tr>
-                  <th className="text-left text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
-                    Ledger Name
-                  </th>
-                  <th className="text-left text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
-                    Group
-                  </th>
-                  <th className="text-right text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
-                    Balance
-                  </th>
-                  <th className="text-center text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
-                    Type
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {ledgers.map((ledger, idx) => (
-                  <tr
-                    key={idx}
-                    className="hover-elevate cursor-pointer"
-                    onClick={() => console.log(`View ledger: ${ledger.name}`)}
-                    data-testid={`ledger-row-${idx}`}
-                  >
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-foreground">{ledger.name}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-muted-foreground">{ledger.group}</p>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <p className="text-base font-mono font-semibold text-foreground">
-                        {ledger.balance}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge variant={ledger.type === "Dr" ? "secondary" : "default"}>
-                        {ledger.type}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading ledgers...</p>
           </div>
-        </Card>
+        ) : (
+          <Card>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted border-b border-border">
+                  <tr>
+                    <th className="text-left text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
+                      Ledger Name
+                    </th>
+                    <th className="text-left text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
+                      Group
+                    </th>
+                    <th className="text-right text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
+                      Balance
+                    </th>
+                    <th className="text-center text-xs font-medium uppercase tracking-wide text-muted-foreground px-6 py-3">
+                      Type
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredLedgers?.map((ledger, idx) => (
+                    <tr
+                      key={ledger.id}
+                      className="hover-elevate cursor-pointer"
+                      onClick={() => console.log(`View ledger: ${ledger.name}`)}
+                      data-testid={`ledger-row-${idx}`}
+                    >
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-medium text-foreground">{ledger.name}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-muted-foreground">{ledger.group}</p>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <p className="text-base font-mono font-semibold text-foreground">
+                          ₹{parseFloat(ledger.balance).toLocaleString('en-IN')}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Badge variant={ledger.type === "Dr" ? "secondary" : "default"}>
+                          {ledger.type}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );

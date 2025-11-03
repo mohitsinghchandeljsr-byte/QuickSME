@@ -4,44 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Phone, Mail } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import type { Party } from "@shared/schema";
 
 export default function Parties() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const parties = [
-    {
-      name: "ABC Suppliers",
-      type: "Vendor",
-      gstin: "24AABCU9603R1ZM",
-      phone: "+91 98765 43210",
-      email: "contact@abcsuppliers.com",
-      outstanding: "-₹45,000",
-    },
-    {
-      name: "XYZ Customer",
-      type: "Customer",
-      gstin: "27AAPFU0939F1ZV",
-      phone: "+91 98765 43211",
-      email: "billing@xyzcustomer.com",
-      outstanding: "+₹65,000",
-    },
-    {
-      name: "PQR Vendors",
-      type: "Vendor",
-      gstin: "29AABCT1332L1ZG",
-      phone: "+91 98765 43212",
-      email: "sales@pqrvendors.com",
-      outstanding: "-₹28,500",
-    },
-    {
-      name: "LMN Client",
-      type: "Customer",
-      gstin: "07AACCI3788N1Z1",
-      phone: "+91 98765 43213",
-      email: "accounts@lmnclient.com",
-      outstanding: "+₹92,000",
-    },
-  ];
+  const { data: parties, isLoading } = useQuery<Party[]>({
+    queryKey: ["/api/parties"],
+  });
+
+  const filteredParties = parties?.filter(party =>
+    party.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    party.gstin?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -72,57 +48,67 @@ export default function Parties() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {parties.map((party, idx) => (
-            <Card
-              key={idx}
-              className="p-6 hover-elevate active-elevate-2 cursor-pointer"
-              onClick={() => console.log(`View party: ${party.name}`)}
-              data-testid={`party-card-${idx}`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-base font-semibold text-foreground">
-                      {party.name}
-                    </h3>
-                    <Badge variant={party.type === "Customer" ? "default" : "secondary"}>
-                      {party.type}
-                    </Badge>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading parties...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {filteredParties?.map((party, idx) => (
+              <Card
+                key={party.id}
+                className="p-6 hover-elevate active-elevate-2 cursor-pointer"
+                onClick={() => console.log(`View party: ${party.name}`)}
+                data-testid={`party-card-${idx}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {party.name}
+                      </h3>
+                      <Badge variant={party.type === "Customer" ? "default" : "secondary"}>
+                        {party.type}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                          GSTIN
+                        </p>
+                        <p className="text-sm font-mono text-foreground">{party.gstin || "N/A"}</p>
+                      </div>
+                      {party.phone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-3 h-3 text-muted-foreground" />
+                          <p className="text-sm text-foreground">{party.phone}</p>
+                        </div>
+                      )}
+                      {party.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-3 h-3 text-muted-foreground" />
+                          <p className="text-sm text-foreground">{party.email}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                        GSTIN
-                      </p>
-                      <p className="text-sm font-mono text-foreground">{party.gstin}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3 h-3 text-muted-foreground" />
-                      <p className="text-sm text-foreground">{party.phone}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3 h-3 text-muted-foreground" />
-                      <p className="text-sm text-foreground">{party.email}</p>
-                    </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                      Outstanding
+                    </p>
+                    <p
+                      className={`text-xl font-mono font-bold ${
+                        parseFloat(party.outstanding) >= 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {parseFloat(party.outstanding) >= 0 ? "+" : ""}₹{Math.abs(parseFloat(party.outstanding)).toLocaleString('en-IN')}
+                    </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                    Outstanding
-                  </p>
-                  <p
-                    className={`text-xl font-mono font-bold ${
-                      party.outstanding.startsWith("+") ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {party.outstanding}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

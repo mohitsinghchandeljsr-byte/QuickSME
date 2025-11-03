@@ -1,18 +1,58 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, decimal, timestamp, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
+export const ledgers = pgTable("ledgers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  name: text("name").notNull(),
+  group: text("group").notNull(),
+  balance: decimal("balance", { precision: 15, scale: 2 }).notNull().default("0"),
+  type: text("type").notNull(), // 'Dr' or 'Cr'
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const parties = pgTable("parties", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  type: text("type").notNull(), // 'Customer' or 'Vendor'
+  gstin: text("gstin"),
+  phone: text("phone"),
+  email: text("email"),
+  outstanding: decimal("outstanding", { precision: 15, scale: 2 }).notNull().default("0"),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export const vouchers = pgTable("vouchers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  voucherType: text("voucher_type").notNull(),
+  date: text("date").notNull(),
+  partyId: varchar("party_id"),
+  ledgerId: varchar("ledger_id"),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  narration: text("narration"),
+  cgst: decimal("cgst", { precision: 15, scale: 2 }).default("0"),
+  sgst: decimal("sgst", { precision: 15, scale: 2 }).default("0"),
+  igst: decimal("igst", { precision: 15, scale: 2 }).default("0"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertLedgerSchema = createInsertSchema(ledgers).omit({
+  id: true,
+});
+
+export const insertPartySchema = createInsertSchema(parties).omit({
+  id: true,
+});
+
+export const insertVoucherSchema = createInsertSchema(vouchers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertLedger = z.infer<typeof insertLedgerSchema>;
+export type Ledger = typeof ledgers.$inferSelect;
+
+export type InsertParty = z.infer<typeof insertPartySchema>;
+export type Party = typeof parties.$inferSelect;
+
+export type InsertVoucher = z.infer<typeof insertVoucherSchema>;
+export type Voucher = typeof vouchers.$inferSelect;

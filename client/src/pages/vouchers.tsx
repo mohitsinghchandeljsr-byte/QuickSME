@@ -10,18 +10,88 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Calendar, Save, X, Plus } from "lucide-react";
+import { Calendar, Save, X } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { Party, Ledger, InsertVoucher } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 export default function Vouchers() {
   const [voucherType, setVoucherType] = useState("payment");
-  const [date, setDate] = useState("15-11-2024");
+  const [date, setDate] = useState(new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
+  const [partyId, setPartyId] = useState("");
+  const [ledgerId, setLedgerId] = useState("");
   const [amount, setAmount] = useState("");
   const [narration, setNarration] = useState("");
+  const [cgst, setCgst] = useState("");
+  const [sgst, setSgst] = useState("");
+  const [igst, setIgst] = useState("");
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
-  const handleSave = () => {
-    console.log("Saving voucher:", { voucherType, date, amount, narration });
+  const { data: parties } = useQuery<Party[]>({
+    queryKey: ["/api/parties"],
+  });
+
+  const { data: ledgers } = useQuery<Ledger[]>({
+    queryKey: ["/api/ledgers"],
+  });
+
+  const createVoucherMutation = useMutation({
+    mutationFn: async (voucher: InsertVoucher) => {
+      return apiRequest("POST", "/api/vouchers", voucher);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/vouchers"] });
+      toast({
+        title: "Success",
+        description: "Voucher saved successfully",
+      });
+      resetForm();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save voucher",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetForm = () => {
     setAmount("");
     setNarration("");
+    setPartyId("");
+    setLedgerId("");
+    setCgst("");
+    setSgst("");
+    setIgst("");
+  };
+
+  const handleSave = () => {
+    if (!amount) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter an amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const voucherData: InsertVoucher = {
+      voucherType,
+      date,
+      partyId: partyId || null,
+      ledgerId: ledgerId || null,
+      amount,
+      narration: narration || null,
+      cgst: cgst || "0",
+      sgst: sgst || "0",
+      igst: igst || "0",
+    };
+
+    createVoucherMutation.mutate(voucherData);
   };
 
   return (
@@ -35,13 +105,21 @@ export default function Vouchers() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => console.log("Cancel")} data-testid="button-cancel">
+            <Button 
+              variant="outline" 
+              onClick={() => setLocation("/")} 
+              data-testid="button-cancel"
+            >
               <X className="w-4 h-4 mr-2" />
               Cancel
             </Button>
-            <Button onClick={handleSave} data-testid="button-save">
+            <Button 
+              onClick={handleSave} 
+              disabled={createVoucherMutation.isPending}
+              data-testid="button-save"
+            >
               <Save className="w-4 h-4 mr-2" />
-              Save (Ctrl+S)
+              {createVoucherMutation.isPending ? "Saving..." : "Save (Ctrl+S)"}
             </Button>
           </div>
         </div>
@@ -92,24 +170,36 @@ export default function Vouchers() {
                 <Label htmlFor="party" className="text-sm font-medium mb-1 block">
                   Party Name
                 </Label>
-                <Input
-                  id="party"
-                  type="text"
-                  placeholder="Start typing to search or create new..."
-                  data-testid="input-party"
-                />
+                <Select value={partyId} onValueChange={setPartyId}>
+                  <SelectTrigger id="party" data-testid="select-party">
+                    <SelectValue placeholder="Select party..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {parties?.map((party) => (
+                      <SelectItem key={party.id} value={party.id}>
+                        {party.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <Label htmlFor="ledger" className="text-sm font-medium mb-1 block">
                   Ledger Account
                 </Label>
-                <Input
-                  id="ledger"
-                  type="text"
-                  placeholder="Select ledger account..."
-                  data-testid="input-ledger"
-                />
+                <Select value={ledgerId} onValueChange={setLedgerId}>
+                  <SelectTrigger id="ledger" data-testid="select-ledger">
+                    <SelectValue placeholder="Select ledger..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ledgers?.map((ledger) => (
+                      <SelectItem key={ledger.id} value={ledger.id}>
+                        {ledger.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -141,7 +231,7 @@ export default function Vouchers() {
                 />
               </div>
 
-              {voucherType === "sales" || voucherType === "purchase" ? (
+              {(voucherType === "sales" || voucherType === "purchase") && (
                 <div className="border-t border-border pt-6 space-y-4">
                   <h3 className="text-base font-semibold text-foreground">GST Details</h3>
                   <div className="grid grid-cols-3 gap-4">
@@ -150,6 +240,8 @@ export default function Vouchers() {
                       <Input
                         type="text"
                         placeholder="0.00"
+                        value={cgst}
+                        onChange={(e) => setCgst(e.target.value)}
                         className="text-right font-mono"
                         data-testid="input-cgst"
                       />
@@ -159,6 +251,8 @@ export default function Vouchers() {
                       <Input
                         type="text"
                         placeholder="0.00"
+                        value={sgst}
+                        onChange={(e) => setSgst(e.target.value)}
                         className="text-right font-mono"
                         data-testid="input-sgst"
                       />
@@ -168,13 +262,15 @@ export default function Vouchers() {
                       <Input
                         type="text"
                         placeholder="0.00"
+                        value={igst}
+                        onChange={(e) => setIgst(e.target.value)}
                         className="text-right font-mono"
                         data-testid="input-igst"
                       />
                     </div>
                   </div>
                 </div>
-              ) : null}
+              )}
             </div>
           </Card>
 
