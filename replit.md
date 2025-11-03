@@ -144,12 +144,29 @@ Preferred communication style: Simple, everyday language.
 
 **Integrations & Developer Platform**:
 - **Integrations Hub**: Centralized page for connecting external tools (Notion, Trello, Evernote, GitHub)
-- **Developer Portal**: Complete API platform for building custom apps and integrations
-  - **API Documentation**: Full REST API reference with code examples
-  - **API Keys**: Generate and manage API keys for programmatic access
-  - **Webhooks**: Subscribe to real-time events (voucher.created, stock.low, etc.)
+- **Developer Portal**: Complete API platform with functional backend for building custom apps and integrations
+  - **API Documentation**: Full REST API reference with code examples for all endpoints
+  - **API Keys**: Secure API key management with SHA-256 hashing, one-time display, masked storage
+    - Backend: `/api/api-keys` endpoints (GET, POST, DELETE)
+    - Frontend: Full CRUD with TanStack Query, proper loading/error states
+    - Security: Keys hashed server-side, full key shown only once at creation
+  - **Webhooks**: Real-time event subscriptions with auto-generated signing secrets
+    - Backend: `/api/webhooks` endpoints with proper payload validation
+    - Frontend: Event selection, URL validation, delivery statistics
+    - Security: Signing secrets auto-generated, never exposed to frontend
 - **GitHub Integration**: Already connected via Replit's OAuth system
 - **Note**: Notion integration requires manual API key setup (Replit connector dismissed by user)
+
+**Developer Portal Implementation Details**:
+- **Schema**: API keys and webhooks tables in `shared/schema.ts` with Zod validation
+- **Storage**: In-memory implementation with proper hashing (SHA-256) and soft deletes
+- **API Routes**: Express endpoints in `server/routes.ts` with request validation
+- **Security Features**: 
+  - API keys stored as hashes only, never exposed in full after creation
+  - Webhook secrets auto-generated server-side
+  - Proper field filtering to prevent sensitive data exposure
+  - Input validation via Zod schemas
+- **Architect Verified**: Security implementation passes review, addresses Tally's security weaknesses
 
 **User Experience Improvements**:
 - Fixed accessibility warnings in Command Palette (added DialogTitle and DialogDescription)
