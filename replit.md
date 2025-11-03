@@ -27,9 +27,9 @@ Preferred communication style: Simple, everyday language.
 - Keyboard-first navigation philosophy
 
 **Component Structure**:
-- Page components in `client/src/pages/` (dashboard, vouchers, reports, parties, ledgers, GST tools)
+- Page components in `client/src/pages/` (dashboard, vouchers, stock, purchase orders, expenses, bank reconciliation, reports, parties, ledgers, notes, GitHub integration, GST tools)
 - Reusable UI components in `client/src/components/ui/`
-- Business components (MetricCard, VoucherTypeCard, AppSidebar) in `client/src/components/`
+- Business components (MetricCard, VoucherTypeCard, AppSidebar, CommandPalette) in `client/src/components/`
 - Path aliases configured for clean imports (@/, @shared/, @assets/)
 
 ## Backend Architecture
@@ -45,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 - Storage abstraction layer in `server/storage.ts` with in-memory implementation
 - Request/response logging middleware for API calls
 - JSON body parsing with raw body preservation for webhooks
+- GitHub integration endpoints (`/api/github/user`, `/api/github/repos`) using Octokit client
 
 **Data Layer**:
 - Drizzle ORM configured for PostgreSQL
@@ -56,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - **Ledgers**: Chart of accounts with balance tracking (Dr/Cr type)
 - **Parties**: Customer and vendor management with GST and contact details
 - **Vouchers**: Transaction records with support for multiple types (payment, receipt, sales, purchase, journal, contra)
+- **Stock**: Inventory tracking with HSN codes, reorder levels, barcode support
 - GST tax fields (CGST, SGST, IGST) on voucher records
 - UUID-based primary keys with auto-generation
 
@@ -82,6 +84,7 @@ Preferred communication style: Simple, everyday language.
 - Replit-specific plugins for error overlay, cartographer, and dev banner
 - TypeScript strict mode enabled
 - Path resolution configured for clean imports
+- GitHub integration via @octokit/rest with OAuth authentication
 
 **Build & Deployment**:
 - Vite for frontend bundling with React plugin
@@ -122,3 +125,26 @@ Preferred communication style: Simple, everyday language.
 - Supports unlimited concurrent users and millions of transactions
 
 **Indian SME Specifics**: GST tax fields built into core schema, support for financial year tracking, party management optimized for Indian business workflows, barcode scanner integration for inventory management.
+
+## Recent Changes (November 3, 2024)
+
+**Core Accounting Features Added**:
+- **Purchase Orders**: Track orders placed with suppliers, manage order status (approved, pending, received)
+- **Expense Management**: Track business expenses by category with status tracking and visual breakdowns
+- **Bank Reconciliation**: Match bank statements with ledger entries, identify mismatches
+- **Notes**: Simple note-taking feature with categories for quick reminders and important information
+
+**GitHub Integration**:
+- Connect GitHub account via OAuth
+- View user profile and repository statistics
+- Browse all accessible repositories with search functionality
+- Backup accounting data to GitHub repositories
+- Sync accounting data with specific repositories
+- Repository metadata display (stars, forks, branches, language)
+
+**User Experience Improvements**:
+- Fixed accessibility warnings in Command Palette (added DialogTitle and DialogDescription)
+- Added Purchase Orders, Expenses, Bank Reconciliation to main navigation
+- Moved Notes and GitHub Integration to Miscellaneous section
+- Updated Command Palette to include all new features
+- Reorganized sidebar for better feature discoverability

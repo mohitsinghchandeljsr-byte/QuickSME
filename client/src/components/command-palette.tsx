@@ -31,6 +31,8 @@ import {
   Scan,
   Database,
   Plus,
+  StickyNote,
+  Github,
 } from "lucide-react";
 
 export function CommandPalette() {
@@ -119,6 +121,8 @@ export function CommandPalette() {
     {
       group: "Miscellaneous",
       items: [
+        { name: "Notes", icon: StickyNote, url: "/notes", shortcut: "" },
+        { name: "GitHub Integration", icon: Github, url: "/github", shortcut: "" },
         { name: "Barcode Scanner", icon: Scan, url: "/barcode-scanner", shortcut: "⌘⇧B" },
         { name: "Backup & Restore", icon: Database, url: "/backup-restore", shortcut: "" },
       ],

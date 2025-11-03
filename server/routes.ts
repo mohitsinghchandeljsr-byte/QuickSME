@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema } from "@shared/schema";
+import { getUncachableGitHubClient } from "./github";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ledger routes
@@ -150,6 +151,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete stock item" });
+    }
+  });
+
+  // GitHub routes
+  app.get("/api/github/user", async (_req, res) => {
+    try {
+      const octokit = await getUncachableGitHubClient();
+      const { data } = await octokit.rest.users.getAuthenticated();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch GitHub user info" });
+    }
+  });
+
+  app.get("/api/github/repos", async (_req, res) => {
+    try {
+      const octokit = await getUncachableGitHubClient();
+      const { data } = await octokit.rest.repos.listForAuthenticatedUser({
+        sort: 'updated',
+        per_page: 100,
+      });
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch GitHub repositories" });
     }
   });
 

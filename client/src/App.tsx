@@ -27,6 +27,7 @@ import Notes from "@/pages/notes";
 import PurchaseOrders from "@/pages/purchase-orders";
 import Expenses from "@/pages/expenses";
 import BankReconciliation from "@/pages/bank-reconciliation";
+import GitHubIntegration from "@/pages/github-integration";
 
 import InvoiceTemplate from "@/pages/templates/invoice";
 import QuotationGenerator from "@/pages/templates/quotation";
@@ -80,6 +81,7 @@ function Router() {
       <Route path="/expenses" component={Expenses} />
       <Route path="/bank-reconciliation" component={BankReconciliation} />
       <Route path="/notes" component={Notes} />
+      <Route path="/github" component={GitHubIntegration} />
       <Route path="/barcode-scanner" component={BarcodeScanner} />
       <Route path="/backup-restore" component={BackupRestore} />
       

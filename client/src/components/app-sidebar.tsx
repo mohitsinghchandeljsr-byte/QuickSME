@@ -179,11 +179,18 @@ const gstComplianceItems = [
   },
 ];
 
+import { Github } from "lucide-react";
+
 const miscellaneousItems = [
   {
     title: "Notes",
     url: "/notes",
     icon: StickyNote,
+  },
+  {
+    title: "GitHub Integration",
+    url: "/github",
+    icon: Github,
   },
   {
     title: "Barcode Scanner",
