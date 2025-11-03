@@ -218,7 +218,7 @@ export default function StockManagement() {
                         <FormItem>
                           <FormLabel>Reorder Level</FormLabel>
                           <FormControl>
-                            <Input {...field} type="number" className="font-mono" data-testid="input-reorder-level" />
+                            <Input {...field} value={field.value || ""} type="number" className="font-mono" data-testid="input-reorder-level" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -231,7 +231,7 @@ export default function StockManagement() {
                         <FormItem>
                           <FormLabel>HSN Code</FormLabel>
                           <FormControl>
-                            <Input {...field} className="font-mono" data-testid="input-hsn-code" />
+                            <Input {...field} value={field.value || ""} className="font-mono" data-testid="input-hsn-code" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -244,7 +244,7 @@ export default function StockManagement() {
                         <FormItem>
                           <FormLabel>GST Rate (%)</FormLabel>
                           <FormControl>
-                            <Input {...field} type="number" className="font-mono" data-testid="input-gst-rate" />
+                            <Input {...field} value={field.value || ""} type="number" className="font-mono" data-testid="input-gst-rate" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

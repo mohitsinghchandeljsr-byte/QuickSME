@@ -41,6 +41,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+import { UserCheck, ScrollText } from "lucide-react";
+
 const coreMenuItems = [
   {
     title: "Dashboard",
@@ -71,6 +73,16 @@ const coreMenuItems = [
     title: "Ledgers",
     url: "/ledgers",
     icon: Building2,
+  },
+  {
+    title: "User Management",
+    url: "/users",
+    icon: UserCheck,
+  },
+  {
+    title: "Audit Log",
+    url: "/audit",
+    icon: ScrollText,
   },
 ];
 

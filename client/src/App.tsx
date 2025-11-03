@@ -14,6 +14,8 @@ import Parties from "@/pages/parties";
 import Ledgers from "@/pages/ledgers";
 import Login from "@/pages/login";
 import Settings from "@/pages/settings";
+import UserManagement from "@/pages/user-management";
+import AuditLog from "@/pages/audit-log";
 
 import RevenueForecaster from "@/pages/tools/revenue-forecaster";
 import GSTCalculator from "@/pages/tools/gst-calculator";
@@ -60,6 +62,8 @@ function Router() {
       <Route path="/reports" component={Reports} />
       <Route path="/parties" component={Parties} />
       <Route path="/ledgers" component={Ledgers} />
+      <Route path="/users" component={UserManagement} />
+      <Route path="/audit" component={AuditLog} />
       <Route path="/settings" component={Settings} />
       
       <Route path="/tools/revenue-forecaster" component={RevenueForecaster} />
