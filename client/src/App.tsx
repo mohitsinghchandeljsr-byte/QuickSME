@@ -165,7 +165,7 @@ export default function App() {
                   <span className="text-sm text-muted-foreground">{localStorage.getItem("companyName") || "Demo Company Ltd."}</span>
                 </div>
               </header>
-              <main className="flex-1 overflow-hidden">
+              <main className="flex-1 overflow-auto">
                 <Router />
               </main>
             </div>
