@@ -17,6 +17,8 @@ import {
   ChevronDown,
   ChevronRight,
   Package,
+  UserCheck,
+  ScrollText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,8 +42,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
-import { UserCheck, ScrollText } from "lucide-react";
 
 const coreMenuItems = [
   {
