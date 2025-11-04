@@ -48,6 +48,7 @@ import GSTR3B from "@/pages/gst/gstr3b";
 import EInvoice from "@/pages/gst/e-invoice";
 import { useEffect } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function Router() {
   const [location, setLocation] = useLocation();
@@ -165,8 +166,9 @@ export default function App() {
                       <span>Quick navigation</span>
                     </button>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="text-sm text-muted-foreground">{localStorage.getItem("companyName") || "Demo Company Ltd."}</span>
+                    <ThemeToggle />
                   </div>
                 </header>
                 <main className="flex-1 overflow-auto min-h-0">
