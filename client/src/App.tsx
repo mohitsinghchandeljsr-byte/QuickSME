@@ -47,6 +47,7 @@ import GSTR2B from "@/pages/gst/gstr2b";
 import GSTR3B from "@/pages/gst/gstr3b";
 import EInvoice from "@/pages/gst/e-invoice";
 import { useEffect } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 
 function Router() {
   const [location, setLocation] = useLocation();
@@ -124,18 +125,21 @@ export default function App() {
   if (!isAuthenticated) {
     return (
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Router />
-          <Toaster />
-        </TooltipProvider>
+        <ThemeProvider defaultTheme="dark">
+          <TooltipProvider>
+            <Router />
+            <Toaster />
+          </TooltipProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     );
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
+      <ThemeProvider defaultTheme="dark">
+        <TooltipProvider>
+          <SidebarProvider style={style as React.CSSProperties}>
           <CommandPalette />
           <div className="flex h-screen w-full">
             <AppSidebar />
@@ -173,6 +177,7 @@ export default function App() {
         </SidebarProvider>
         <Toaster />
       </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
