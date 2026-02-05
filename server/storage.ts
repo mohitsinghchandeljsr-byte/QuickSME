@@ -1,6 +1,7 @@
 import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem, type ApiKey, type InsertApiKey, type Webhook, type InsertWebhook } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { createHash, randomBytes } from "crypto";
+import { PostgresStorage } from "./storage-postgres";
 
 export interface IStorage {
   // Ledgers
@@ -42,6 +43,11 @@ export interface IStorage {
   deleteWebhook(id: string): Promise<void>;
   updateWebhookStats(id: string, success: boolean): Promise<void>;
 }
+
+// Use PostgreSQL storage in production, in-memory storage for development
+export const storage: IStorage = process.env.NODE_ENV === 'production' && process.env.DATABASE_URL
+  ? new PostgresStorage()
+  : new MemStorage();
 
 export class MemStorage implements IStorage {
   private ledgers: Map<string, Ledger>;
@@ -432,5 +438,3 @@ export class MemStorage implements IStorage {
     }
   }
 }
-
-export const storage = new MemStorage();
