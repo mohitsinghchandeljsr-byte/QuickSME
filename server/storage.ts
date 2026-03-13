@@ -1,4 +1,4 @@
-import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem, type ApiKey, type InsertApiKey, type Webhook, type InsertWebhook } from "@shared/schema";
+import { type Ledger, type InsertLedger, type Party, type InsertParty, type Voucher, type InsertVoucher, type StockItem, type InsertStockItem, type ApiKey, type InsertApiKey, type Webhook, type InsertWebhook, type Expense, type InsertExpense } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { createHash, randomBytes } from "crypto";
 import { PostgresStorage } from "./storage-postgres";
@@ -41,10 +41,7 @@ export interface IStorage {
   getWebhook(id: string): Promise<Webhook | undefined>;
   createWebhook(webhook: InsertWebhook): Promise<Webhook>;
   deleteWebhook(id: string): Promise<void>;
-  updateWebhookStats(id: string, success: boolean): Promise<void>;
-}
-
-export class MemStorage implements IStorage {
+  updateWebhookStats(id: string, success: boolean): Promise<void>;\n\n  // Expenses\n  getExpenses(): Promise<Expense[]>;\n  getExpense(id: string): Promise<Expense | undefined>;\n  createExpense(expense: InsertExpense): Promise<Expense>;\n}\n\nexport class MemStorage implements IStorage {
 
   private ledgers: Map<string, Ledger>;
   private parties: Map<string, Party>;
@@ -52,6 +49,7 @@ export class MemStorage implements IStorage {
   private stockItems: Map<string, StockItem>;
   private apiKeys: Map<string, ApiKey>;
   private webhooks: Map<string, Webhook>;
+  private expenses: Map<string, Expense> = new Map();
 
   constructor() {
     this.ledgers = new Map();
@@ -60,6 +58,7 @@ export class MemStorage implements IStorage {
     this.stockItems = new Map();
     this.apiKeys = new Map();
     this.webhooks = new Map();
+    this.expenses = new Map();
     this.initializeSampleData();
   }
 
@@ -187,6 +186,71 @@ export class MemStorage implements IStorage {
       },
     ];
     sampleStockItems.forEach(item => this.stockItems.set(item.id, item));
+
+    // Sample expenses
+    const sampleExpenses: Expense[] = [
+      {
+        id: randomUUID(),
+        date: "2024-10-01",
+        category: "Office Supplies",
+        description: "Printer ink cartridges and paper",
+        amount: "1250.00",
+        status: "paid",
+        ledgerId: null,
+        createdAt: new Date("2024-10-01"),
+      },
+      {
+        id: randomUUID(),
+        date: "2024-10-05",
+        category: "Utilities",
+        description: "Electricity bill for October",
+        amount: "4500.00",
+        status: "paid",
+        ledgerId: null,
+        createdAt: new Date("2024-10-05"),
+      },
+      {
+        id: randomUUID(),
+        date: "2024-10-12",
+        category: "Travel",
+        description: "Client meeting travel expenses",
+        amount: "3200.50",
+        status: "pending",
+        ledgerId: null,
+        createdAt: new Date("2024-10-12"),
+      },
+      {
+        id: randomUUID(),
+        date: "2024-10-15",
+        category: "Marketing",
+        description: "Google Ads campaign",
+        amount: "8500.00",
+        status: "paid",
+        ledgerId: null,
+        createdAt: new Date("2024-10-15"),
+      },
+      {
+        id: randomUUID(),
+        date: "2024-10-18",
+        category: "Repairs",
+        description: "Office AC maintenance",
+        amount: "2800.00",
+        status: "paid",
+        ledgerId: null,
+        createdAt: new Date("2024-10-18"),
+      },
+      {
+        id: randomUUID(),
+        date: "2024-10-22",
+        category: "Office Supplies",
+        description: "Monthly stationery order",
+        amount: "950.75",
+        status: "pending",
+        ledgerId: null,
+        createdAt: new Date("2024-10-22"),
+      },
+    ];
+    sampleExpenses.forEach(expense => this.expenses.set(expense.id, expense));
   }
 
   // Ledger methods
@@ -432,6 +496,30 @@ export class MemStorage implements IStorage {
       }
       this.webhooks.set(id, webhook);
     }
+  }
+
+  // Expense methods
+  async getExpenses(): Promise<Expense[]> {
+    return Array.from(this.expenses.values()).sort((a, b) => {
+      const dateA = new Date(b.createdAt || 0).getTime();
+      const dateB = new Date(a.createdAt || 0).getTime();
+      return dateA - dateB;
+    });
+  }
+
+  async getExpense(id: string): Promise<Expense | undefined> {
+    return this.expenses.get(id);
+  }
+
+  async createExpense(insertExpense: InsertExpense): Promise<Expense> {
+    const id = randomUUID();
+    const expense: Expense = {
+      id,
+      ...insertExpense,
+      createdAt: new Date(),
+    };
+    this.expenses.set(id, expense);
+    return expense;
   }
 }
 

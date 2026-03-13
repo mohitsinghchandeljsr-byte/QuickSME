@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema, insertApiKeySchema, insertWebhookSchema } from "@shared/schema";
+import { insertLedgerSchema, insertPartySchema, insertVoucherSchema, insertStockItemSchema, insertApiKeySchema, insertWebhookSchema, insertExpenseSchema } from "@shared/schema";
 import { getUncachableGitHubClient } from "./github";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -211,14 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/webhooks/:id", async (req, res) => {
-    try {
-      await storage.deleteWebhook(req.params.id);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete webhook" });
-    }
-  });
+  app.delete("/api/webhooks/:id", async (req, res) => {\n    try {\n      await storage.deleteWebhook(req.params.id);\n      res.status(204).send();\n    } catch (error) {\n      res.status(500).json({ error: "Failed to delete webhook" });\n    }\n  });\n\n  // Expense routes\n  app.get("/api/expenses", async (_req, res) => {\n    try {\n      const expenses = await storage.getExpenses();\n      res.json(expenses);\n    } catch (error) {\n      res.status(500).json({ error: "Failed to fetch expenses" });\n    }\n  });\n\n  app.get("/api/expenses/:id", async (req, res) => {\n    try {\n      const expense = await storage.getExpense(req.params.id);\n      if (!expense) {\n        return res.status(404).json({ error: "Expense not found" });\n      }\n      res.json(expense);\n    } catch (error) {\n      res.status(500).json({ error: "Failed to fetch expense" });\n    }\n  });\n\n  app.post("/api/expenses", async (req, res) => {\n    try {\n      const parsed = insertExpenseSchema.parse(req.body);\n      const expense = await storage.createExpense(parsed);\n      res.status(201).json(expense);\n    } catch (error) {\n      res.status(400).json({ error: "Invalid expense data" });\n    }\n  });
 
   // AI Assistant routes
   app.post("/api/ai-assist", async (req, res) => {

@@ -1,30 +1,21 @@
-# Blank Screen Fix - TODO
+# QuickSME Application Startup - TODO Steps
 
-## Issues to Fix (Confirmed: 1, 2, 3)
+## Plan: Fix syntax errors, rebuild, and start production server
 
-### 1. Create Error Boundary Component
-- [ ] Create `client/src/components/error-boundary.tsx`
-- [ ] Add fallback UI with error details
-- [ ] Include reload button
+**Status: [IN PROGRESS]**
 
-### 2. Fix main.tsx
-- [ ] Add null check for root element
-- [ ] Wrap App with Error Boundary
-- [ ] Add global error handler
+### Step 1: ✅ Create TODO.md (Current)
+### Step 2: ✅ Fix server/routes.ts syntax errors
+### Step 3: ✅ Fix server/storage.ts syntax errors  
 
-### 3. Fix ThemeProvider
-- [ ] Add safe window/document checks
-- [ ] Add try-catch for localStorage access
+### Step 4: 🔄 Rebuild application
+- Run `npm run build` to generate clean dist/
 
-### 4. Fix App.tsx
-- [ ] Add safe localStorage access with try-catch
-- [ ] Add loading state for authentication check
+### Step 5: 🔄 Start production server
+- Run `npm start` (or start.cmd)
+- Verify http://localhost:5000 accessible
 
-### 5. Fix AppSidebar
-- [ ] Add safe localStorage access
-- [ ] Add error handling
-
-### 6. Testing
-- [ ] Test application in Chrome
-- [ ] Check browser console for errors
-- [ ] Verify all pages load correctly
+### Step 6: 🔄 Verify and complete
+- Check no errors in terminal
+- Test basic functionality
+- Mark complete
