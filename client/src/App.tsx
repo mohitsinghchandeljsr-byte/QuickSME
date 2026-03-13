@@ -6,6 +6,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandPalette } from "@/components/command-palette";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import AIAssistant from "@/pages/ai-assistant";
@@ -145,6 +154,65 @@ export default function App() {
             <div className="flex h-screen w-full">
               <AppSidebar />
               <div className="flex flex-col flex-1">
+                <Menubar className="border-b border-black bg-black text-gray-400 h-8">
+                  <MenubarMenu>
+                    <MenubarTrigger>File</MenubarTrigger>
+                    <MenubarContent>
+                      <MenubarItem>
+                        New Company <MenubarShortcut>⌘N</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Open Company <MenubarShortcut>⌘O</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarSeparator />
+                      <MenubarItem>
+                        Backup <MenubarShortcut>⌘B</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Restore <MenubarShortcut>⌘R</MenubarShortcut>
+                      </MenubarItem>
+                    </MenubarContent>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger>Edit</MenubarTrigger>
+                    <MenubarContent>
+                      <MenubarItem>
+                        Undo <MenubarShortcut>⌘Z</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarSeparator />
+                      <MenubarItem>
+                        Cut <MenubarShortcut>⌘X</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Copy <MenubarShortcut>⌘C</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Paste <MenubarShortcut>⌘V</MenubarShortcut>
+                      </MenubarItem>
+                    </MenubarContent>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger>View</MenubarTrigger>
+                    <MenubarContent>
+                      <MenubarItem>
+                        Toggle Sidebar <MenubarShortcut>⌘/</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Command Palette <MenubarShortcut>⌘K</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarSeparator />
+                      <MenubarItem>
+                        Zoom In <MenubarShortcut>⌘+</MenubarShortcut>
+                      </MenubarItem>
+                      <MenubarItem>
+                        Zoom Out <MenubarShortcut>⌘-</MenubarShortcut>
+                      </MenubarItem>
+                    </MenubarContent>
+                  </MenubarMenu>
+                </Menubar>
                 <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
                   <div className="flex items-center gap-4">
                     <SidebarTrigger data-testid="button-sidebar-toggle" />

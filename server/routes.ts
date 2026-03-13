@@ -233,8 +233,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { default: OpenAI } = await import('openai');
       
       const openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: 'sk-b662e011aebe4af7bbe04cd1341f5b8b',
+        baseURL: 'https://api.deepseek.com/v1',
       });
 
       // Gather current accounting data for context
@@ -248,18 +248,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate summary statistics
       const totalVouchers = vouchers.length;
       const totalRevenue = vouchers
-        .filter(v => v.type === 'sales')
-        .reduce((sum, v) => sum + v.amount, 0);
+        .filter(v => v.voucherType === 'sales')
+        .reduce((sum, v) => sum + parseFloat(v.amount || '0'), 0);
       const totalExpenses = vouchers
-        .filter(v => v.type === 'payment' || v.type === 'purchase')
-        .reduce((sum, v) => sum + v.amount, 0);
-      const lowStockItems = stockItems.filter(item => item.quantity <= item.reorderLevel);
+        .filter(v => v.voucherType === 'payment' || v.voucherType === 'purchase')
+        .reduce((sum, v) => sum + parseFloat(v.amount || '0'), 0);
+      const lowStockItems = stockItems.filter(item => parseFloat(item.quantity || '0') <= parseFloat(item.reorderLevel || '0'));
       const totalParties = parties.length;
       const customers = parties.filter(p => p.type === 'customer').length;
       const vendors = parties.filter(p => p.type === 'vendor').length;
 
       // Create system prompt with accounting context
-      const systemPrompt = `You are AIassist, an intelligent accounting assistant for an Indian SME accounting application. You help users manage their finances, understand their data, and provide actionable insights.
+      const systemPrompt = `You are AI Assist, an intelligent accounting assistant for an Indian SME accounting application. You help users manage their finances, understand their data, and provide actionable insights.
 
 Current Business Overview:
 - Total Vouchers: ${totalVouchers}
@@ -271,10 +271,10 @@ Current Business Overview:
 - Ledgers: ${ledgers.length}
 
 Recent Vouchers (last 5):
-${vouchers.slice(-5).map(v => `- ${v.voucherNumber}: ${v.type} of ₹${v.amount.toLocaleString('en-IN')} on ${new Date(v.date).toLocaleDateString('en-IN')}`).join('\n')}
+${vouchers.slice(-5).map(v => `- ${v.voucherNumber || 'N/A'}: ${v.voucherType} of ₹${parseFloat(v.amount || '0').toLocaleString('en-IN')} on ${new Date(v.date).toLocaleDateString('en-IN')}`).join('\n')}
 
 Low Stock Items:
-${lowStockItems.length > 0 ? lowStockItems.map(item => `- ${item.name}: ${item.quantity} units (reorder at ${item.reorderLevel})`).join('\n') : 'None'}
+${lowStockItems.length > 0 ? lowStockItems.map(item => `- ${item.name}: ${parseFloat(item.quantity || '0')} units (reorder at ${parseFloat(item.reorderLevel || '0')})`).join('\n') : 'None'}
 
 Your capabilities:
 1. Answer questions about financial data and transactions
@@ -293,7 +293,7 @@ Always respond in a helpful, professional manner. Use Indian number formatting (
       ];
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'deepseek-chat',
         messages: messages as any,
         temperature: 0.7,
         max_tokens: 1000,

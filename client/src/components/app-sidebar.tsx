@@ -1,3 +1,4 @@
+
 import {
   Home,
   FileText,
@@ -259,15 +260,15 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <h2 className="text-lg font-semibold text-sidebar-foreground">SME Accounts</h2>
+        <h2 className="text-lg font-semibold text-sidebar-foreground">ERQ</h2>
         <p className="text-xs text-muted-foreground">{companyName}</p>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="space-y-2">
         <Collapsible open={openSections.main} onOpenChange={(open) => setOpenSections({...openSections, main: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Main</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Main</span>
                 {openSections.main ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -293,8 +294,8 @@ export function AppSidebar() {
         <Collapsible open={openSections.businessTools} onOpenChange={(open) => setOpenSections({...openSections, businessTools: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Business Tools</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Business Tools</span>
                 {openSections.businessTools ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -320,8 +321,8 @@ export function AppSidebar() {
         <Collapsible open={openSections.templates} onOpenChange={(open) => setOpenSections({...openSections, templates: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Templates</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Templates</span>
                 {openSections.templates ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -374,8 +375,8 @@ export function AppSidebar() {
         <Collapsible open={openSections.integrations} onOpenChange={(open) => setOpenSections({...openSections, integrations: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Integrations</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Integrations</span>
                 {openSections.integrations ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -401,8 +402,8 @@ export function AppSidebar() {
         <Collapsible open={openSections.developer} onOpenChange={(open) => setOpenSections({...openSections, developer: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Developer</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Developer</span>
                 {openSections.developer ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -428,8 +429,8 @@ export function AppSidebar() {
         <Collapsible open={openSections.miscellaneous} onOpenChange={(open) => setOpenSections({...openSections, miscellaneous: open})}>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover-elevate">
-                <span className="font-bold">Miscellaneous</span>
+              <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors">
+                <span className="font-semibold text-sidebar-foreground">Miscellaneous</span>
                 {openSections.miscellaneous ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </CollapsibleTrigger>
             </SidebarGroupLabel>

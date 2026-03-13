@@ -49,7 +49,7 @@ export default function AIAssistant() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to get response from AIassist",
+        description: "Failed to get response from ChatGPT",
         variant: "destructive",
       });
     },
@@ -90,7 +90,7 @@ export default function AIAssistant() {
             <Bot className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">AIassist</h1>
+            <h1 className="text-2xl font-semibold text-foreground">ChatGPT</h1>
             <p className="text-sm text-muted-foreground">
               Your intelligent accounting assistant
             </p>
@@ -107,7 +107,7 @@ export default function AIAssistant() {
                   <Sparkles className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">
-                  Welcome to AIassist!
+                  Welcome to ChatGPT!
                 </h2>
                 <p className="text-sm text-muted-foreground mb-6">
                   I can help you understand your financial data, provide insights, and answer accounting questions.

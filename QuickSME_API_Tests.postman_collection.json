@@ -1,0 +1,725 @@
+{
+  "info": {
+    "name": "QuickSME ERP API Tests",
+    "description": "Comprehensive API testing collection for QuickSME ERP system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "ledgerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "partyId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "voucherId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "stockItemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiKeyId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "webhookId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Server Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ledgers API",
+      "item": [
+        {
+          "name": "Get All Ledgers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ledger by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers/{{ledgerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers", "{{ledgerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Ledger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Ledger\",\n  \"group\": \"Test Group\",\n  \"balance\": \"10000.00\",\n  \"type\": \"Dr\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Ledger - Invalid Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"group\": \"\",\n  \"balance\": \"invalid\",\n  \"type\": \"Invalid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Parties API",
+      "item": [
+        {
+          "name": "Get All Parties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/parties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "parties"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Party by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/parties/{{partyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "parties", "{{partyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"type\": \"Customer\",\n  \"gstin\": \"27AAPFU0939F1ZV\",\n  \"phone\": \"+91 98765 43211\",\n  \"email\": \"test@example.com\",\n  \"outstanding\": \"5000.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/parties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "parties"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Vendor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Vendor\",\n  \"type\": \"Vendor\",\n  \"gstin\": \"24AABCU9603R1ZM\",\n  \"phone\": \"+91 98765 43210\",\n  \"email\": \"vendor@example.com\",\n  \"outstanding\": \"-2500.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/parties",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "parties"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Vouchers API",
+      "item": [
+        {
+          "name": "Get All Vouchers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vouchers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vouchers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Voucher by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vouchers/{{voucherId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vouchers", "{{voucherId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sales Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voucherType\": \"Sales\",\n  \"date\": \"2024-01-15\",\n  \"partyId\": \"{{partyId}}\",\n  \"ledgerId\": \"{{ledgerId}}\",\n  \"amount\": \"25000.00\",\n  \"narration\": \"Sale of goods\",\n  \"cgst\": \"2250.00\",\n  \"sgst\": \"2250.00\",\n  \"igst\": \"0.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vouchers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vouchers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Purchase Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voucherType\": \"Purchase\",\n  \"date\": \"2024-01-10\",\n  \"partyId\": \"{{partyId}}\",\n  \"ledgerId\": \"{{ledgerId}}\",\n  \"amount\": \"15000.00\",\n  \"narration\": \"Purchase of inventory\",\n  \"cgst\": \"1350.00\",\n  \"sgst\": \"1350.00\",\n  \"igst\": \"0.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vouchers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vouchers"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stock Items API",
+      "item": [
+        {
+          "name": "Get All Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stock"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stock/{{stockItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stock", "{{stockItemId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Stock Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Product\",\n  \"code\": \"TEST001\",\n  \"category\": \"Electronics\",\n  \"unit\": \"Pcs\",\n  \"quantity\": \"100\",\n  \"purchasePrice\": \"500.00\",\n  \"salePrice\": \"750.00\",\n  \"reorderLevel\": \"10\",\n  \"hsnCode\": \"8471\",\n  \"gstRate\": \"18.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stock"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Stock Item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": \"150\",\n  \"salePrice\": \"800.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stock/{{stockItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stock", "{{stockItemId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Stock Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stock/{{stockItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stock", "{{stockItemId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "API Keys API",
+      "item": [
+        {
+          "name": "Get All API Keys",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/api-keys",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "api-keys"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New API Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test API Key\",\n  \"keyPrefix\": \"sk_test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/api-keys",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "api-keys"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke API Key",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/api-keys/{{apiKeyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "api-keys", "{{apiKeyId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Webhooks API",
+      "item": [
+        {
+          "name": "Get All Webhooks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/webhooks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "webhooks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com/webhook\",\n  \"events\": [\"voucher.created\", \"party.updated\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/webhooks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "webhooks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Webhook",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/webhooks/{{webhookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "webhooks", "{{webhookId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant API",
+      "item": [
+        {
+          "name": "AI Assistant Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What is my current financial status?\",\n  \"conversationHistory\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai-assist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai-assist"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI Assistant - GST Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Help me understand GST calculations for my sales\",\n  \"conversationHistory\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai-assist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai-assist"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "GitHub Integration API",
+      "item": [
+        {
+          "name": "Get GitHub User Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/github/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "github", "user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get GitHub Repositories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/github/repos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "github", "repos"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Load Testing Scenarios",
+      "item": [
+        {
+          "name": "Bulk Create Ledgers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Load Test Ledger {{$randomInt}}\",\n  \"group\": \"Load Test Group\",\n  \"balance\": \"{{$randomInt 1000 10000}}.00\",\n  \"type\": \"Dr\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Concurrent Voucher Creation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voucherType\": \"Sales\",\n  \"date\": \"{{$isoTimestamp}}\",\n  \"partyId\": \"{{partyId}}\",\n  \"ledgerId\": \"{{ledgerId}}\",\n  \"amount\": \"{{$randomInt 1000 50000}}.00\",\n  \"narration\": \"Load test voucher {{$randomInt}}\",\n  \"cgst\": \"{{$randomInt 100 5000}}.00\",\n  \"sgst\": \"{{$randomInt 100 5000}}.00\",\n  \"igst\": \"0.00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vouchers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vouchers"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Testing",
+      "item": [
+        {
+          "name": "Invalid Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invalid-endpoint",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "invalid-endpoint"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid ID Format",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers/invalid-id-format",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers", "invalid-id-format"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Malformed JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"invalid\": json,\n  \"missing\": \"quotes\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ledgers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ledgers"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set timestamp for requests",
+          "pm.globals.set(\"timestamp\", new Date().toISOString());",
+          "",
+          "// Generate random test data",
+          "pm.globals.set(\"randomInt\", Math.floor(Math.random() * 1000));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test scripts",
+          "pm.test(\"Status code is not 5xx\", function () {",
+          "    pm.response.to.not.be.serverError;",
+          "});",
+          "",
+          "pm.test(\"Response time is less than 2000ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "pm.test(\"Response has proper headers\", function () {",
+          "    pm.response.to.have.header(\"Content-Type\");",
+          "});",
+          "",
+          "// Store IDs for dependent requests",
+          "if (pm.response.code === 201 && pm.response.json().id) {",
+          "    var endpoint = pm.request.url.path[pm.request.url.path.length - 1];",
+          "    if (endpoint === 'ledgers') {",
+          "        pm.collectionVariables.set(\"ledgerId\", pm.response.json().id);",
+          "    } else if (endpoint === 'parties') {",
+          "        pm.collectionVariables.set(\"partyId\", pm.response.json().id);",
+          "    } else if (endpoint === 'vouchers') {",
+          "        pm.collectionVariables.set(\"voucherId\", pm.response.json().id);",
+          "    } else if (endpoint === 'stock') {",
+          "        pm.collectionVariables.set(\"stockItemId\", pm.response.json().id);",
+          "    } else if (endpoint === 'api-keys') {",
+          "        pm.collectionVariables.set(\"apiKeyId\", pm.response.json().id);",
+          "    } else if (endpoint === 'webhooks') {",
+          "        pm.collectionVariables.set(\"webhookId\", pm.response.json().id);",
+          "    }",
+          "}",
+          "",
+          "// Validate JSON response structure",
+          "if (pm.response.headers.get(\"Content-Type\") && pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+          "    pm.test(\"Response is valid JSON\", function () {",
+          "        pm.response.json();",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

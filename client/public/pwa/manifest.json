@@ -1,0 +1,28 @@
+{
+  "name": "SME Accounts - Fast & Simple Accounting for Indian Businesses",
+  "short_name": "SME Accounts",
+  "description": "Fast, keyboard-friendly accounting software for Indian SMEs. Manage vouchers, GST compliance, and financial reports with ease.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "lang": "en-IN",
+  "dir": "ltr"
+}

@@ -44,12 +44,8 @@ export interface IStorage {
   updateWebhookStats(id: string, success: boolean): Promise<void>;
 }
 
-// Use PostgreSQL storage in production, in-memory storage for development
-export const storage: IStorage = process.env.NODE_ENV === 'production' && process.env.DATABASE_URL
-  ? new PostgresStorage()
-  : new MemStorage();
-
 export class MemStorage implements IStorage {
+
   private ledgers: Map<string, Ledger>;
   private parties: Map<string, Party>;
   private vouchers: Map<string, Voucher>;
@@ -437,4 +433,13 @@ export class MemStorage implements IStorage {
       this.webhooks.set(id, webhook);
     }
   }
+}
+
+// Use PostgreSQL storage in production, in-memory storage for development
+export let storage: IStorage;
+
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+  storage = new PostgresStorage();
+} else {
+  storage = new MemStorage();
 }
